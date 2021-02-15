@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"encoding/hex"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -60,6 +61,17 @@ func (k msgServer) BuyTickets(ctx context.Context, msg *types.MsgBuyTickets) (*t
 	err = k.SaveTickets(sdkCtx, tickets)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrLogic, err.Error())
+	}
+
+	for _, t := range tickets {
+		sdkCtx.EventManager().EmitEvent(
+			sdk.NewEvent(
+				types.EventTypeBuyTicket,
+				sdk.NewAttribute(types.AttributeKeyTicketID, t.Id),
+				sdk.NewAttribute(types.AttributeKeyTicketTimestamp, t.Timestamp.Format(time.RFC3339)),
+				sdk.NewAttribute(types.AttributeKeyTicketBuyer, t.Owner),
+			),
+		)
 	}
 
 	return &types.MsgBuyTicketsResponse{}, nil

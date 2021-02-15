@@ -16,9 +16,13 @@ service Query {
     option (google.api.http).get = "/cosmicbet/wta/v1beta1/tickets";
   }
 
-  // Draw queries the next planned drawn
-  rpc Draw(QueryDrawRequest) returns (QueryDrawResponse) {
-    option (google.api.http).get = "/cosmicbet/wta/v1beta1/draw";
+  // NextDraw queries the next planned drawn
+  rpc NextDraw(QueryNextDrawRequest) returns (QueryNextDrawResponse) {
+    option (google.api.http).get = "/cosmicbet/wta/v1beta1/next-draw";
+  }
+
+  rpc PastDraws(QueryPastDrawsRequest) returns (QueryPastDrawsResponse) {
+    option (google.api.http).get = "/cosmicbet/wta/v1beta1/past-draws";
   }
 
   // Params queries the wta parameters
@@ -27,7 +31,7 @@ service Query {
   }
 }
 
-// ___________________________________________________________________________________________________________________
+// -------------------------------------------------------------------------------------------------------------------
 
 // QueryTicketsRequest is the request type for the Query/Tickets RPC method.
 message QueryTicketsRequest {
@@ -41,17 +45,31 @@ message QueryTicketsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// ___________________________________________________________________________________________________________________
+// -------------------------------------------------------------------------------------------------------------------
 
 // QueryDrawRequest is the request type for the Query/Draw RPC method.
-message QueryDrawRequest {}
+message QueryNextDrawRequest {}
 
 // QueryDrawResponse is the response type for the Query/Draw RPC method
-message QueryDrawResponse {
+message QueryNextDrawResponse {
   cosmicbet.wta.v1beta1.Draw draw = 1 [(gogoproto.nullable) = false];
 }
 
-// ___________________________________________________________________________________________________________________
+// -------------------------------------------------------------------------------------------------------------------
+
+// QueryPastDrawsRequest is the request type for the Query/PastDraws RPC method.
+message QueryPastDrawsRequest {
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryPastDrawsResponse is the response type for the Query/PastDraws RPC method
+message QueryPastDrawsResponse {
+  cosmicbet.wta.v1beta1.HistoricalDrawsData draws = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// -------------------------------------------------------------------------------------------------------------------
 
 // QueryParamsRequest is the request type for the Query/Params RPC method.
 message QueryParamsRequest {}

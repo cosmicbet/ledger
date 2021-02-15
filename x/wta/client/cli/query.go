@@ -23,7 +23,8 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		GetDrawCmd(),
+		GetNextDrawCmd(),
+		GetPastDrawsCmd(),
 		GetTicketsCmd(),
 		GetParamsCmd(),
 	)
@@ -31,10 +32,11 @@ func GetQueryCmd() *cobra.Command {
 	return cmd
 }
 
-// GetDrawCmd allows to query the details of the next draw
-func GetDrawCmd() *cobra.Command {
+// GetNextDrawCmd allows to query the details of the next draw
+func GetNextDrawCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "draw",
+		Use:   "next-draw",
+		Short: "Get the details of the next draw to be held",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -43,7 +45,7 @@ func GetDrawCmd() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.Draw(context.Background(), &types.QueryDrawRequest{})
+			res, err := queryClient.NextDraw(context.Background(), &types.QueryNextDrawRequest{})
 			if err != nil {
 				return err
 			}
@@ -53,6 +55,39 @@ func GetDrawCmd() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetPastDrawsCmd allows to query all the past draws
+func GetPastDrawsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "past-draws",
+		Short: "Get the details of all the past draws",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.PastDraws(context.Background(), types.NewPastDrawsRequest(pageReq))
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(&res.Draws)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "past draws")
 
 	return cmd
 }

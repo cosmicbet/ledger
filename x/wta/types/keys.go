@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 const (
 	// ModuleName is the name of the wta module
 	ModuleName = "wta"
@@ -18,11 +20,17 @@ const (
 )
 
 var (
-	DrawStoreKey       = []byte{0x1}
-	TicketsStorePrefix = []byte("wta_tickets")
+	CurrentDrawStoreKey     = []byte{0x1}
+	HistoricalDrawsStoreKey = []byte("historical_draw")
+	TicketsStorePrefix      = []byte("wta_tickets")
 )
 
 // TicketsStoreKey returns the store key used to save the ticket with the given id
 func TicketsStoreKey(id string) []byte {
 	return append(TicketsStorePrefix, []byte(id)...)
+}
+
+// HistoricalDataStoreKey returns the store key used to save a historical data entry with the given timestamp
+func HistoricalDataStoreKey(timestamp time.Time) []byte {
+	return append(HistoricalDrawsStoreKey, []byte(timestamp.Format(time.RFC3339))...)
 }

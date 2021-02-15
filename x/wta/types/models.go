@@ -102,6 +102,7 @@ func UnmarshalDraw(cdc codec.BinaryMarshaler, bz []byte) (Draw, error) {
 	return draw, err
 }
 
+// MustUnmarshalDraw unmarshals the given byte slice into a Draw object
 func MustUnmarshalDraw(cdc codec.BinaryMarshaler, bz []byte) Draw {
 	draw, err := UnmarshalDraw(cdc, bz)
 	if err != nil {
@@ -109,4 +110,40 @@ func MustUnmarshalDraw(cdc codec.BinaryMarshaler, bz []byte) Draw {
 	}
 
 	return draw
+}
+
+// ------------------------------------------------------------------------------------------------------------------
+
+// NewHistoricalDrawData creates a new HistoricalDrawData
+func NewHistoricalDrawData(draw Draw, winningTicket *Ticket) HistoricalDrawData {
+	return HistoricalDrawData{
+		Draw:          draw,
+		WinningTicket: winningTicket,
+	}
+}
+
+// MarshalHistoricalDraw marshals the given historical draw as a byte array
+func MarshalHistoricalDraw(cdc codec.BinaryMarshaler, draw HistoricalDrawData) ([]byte, error) {
+	return cdc.MarshalBinaryBare(&draw)
+}
+
+// MustMarshalHistoricalDraw marshals the given draws as a byte array
+func MustMarshalHistoricalDraw(cdc codec.BinaryMarshaler, draw HistoricalDrawData) []byte {
+	bz, err := MarshalHistoricalDraw(cdc, draw)
+	if err != nil {
+		panic(err)
+	}
+
+	return bz
+}
+
+// UnmarshalHistoricalDraw unmarshals the given byte array as a HistoricalDrawData object
+func UnmarshalHistoricalDraw(cdc codec.BinaryMarshaler, bz []byte) (HistoricalDrawData, error) {
+	var draws HistoricalDrawData
+	err := cdc.UnmarshalBinaryBare(bz, &draws)
+	if err != nil {
+		return HistoricalDrawData{}, err
+	}
+
+	return draws, nil
 }

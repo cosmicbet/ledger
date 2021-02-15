@@ -121,6 +121,14 @@ func (k Keeper) WipeCurrentTickets(ctx sdk.Context) {
 func (k Keeper) IncrementDrawPrize(ctx sdk.Context, amount sdk.Coin) error {
 	draw := k.GetCurrentDraw(ctx)
 	draw.Prize = draw.Prize.Add(amount)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypePrizeIncrease,
+			sdk.NewAttribute(types.AttributeKeyPrizeAmount, draw.Prize.String()),
+		),
+	)
+
 	return k.SaveCurrentDraw(ctx, draw)
 }
 
@@ -137,12 +145,20 @@ func (k Keeper) SaveCurrentDraw(ctx sdk.Context, draw types.Draw) error {
 		return err
 	}
 
-	store.Set(types.DrawStoreKey, bz)
+	store.Set(types.CurrentDrawStoreKey, bz)
 	return nil
 }
 
 // GetCurrentDraw returns the Draw for which the tickets can be currently bought
 func (k Keeper) GetCurrentDraw(ctx sdk.Context) types.Draw {
 	store := ctx.KVStore(k.storeKey)
-	return types.MustUnmarshalDraw(k.cdc, store.Get(types.DrawStoreKey))
+	return types.MustUnmarshalDraw(k.cdc, store.Get(types.CurrentDrawStoreKey))
+}
+
+// ------------------------------------------------------------------------------------------------------------------
+
+// SaveHistoricalDraw saves the given draw as an historical draw
+func (k Keeper) SaveHistoricalDraw(ctx sdk.Context, draw types.HistoricalDrawData) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.HistoricalDataStoreKey(draw.Draw.EndTime), types.MustMarshalHistoricalDraw(k.cdc, draw))
 }

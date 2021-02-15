@@ -130,21 +130,21 @@ func (m *QueryTicketsResponse) GetPagination() *query.PageResponse {
 }
 
 // QueryDrawRequest is the request type for the Query/Draw RPC method.
-type QueryDrawRequest struct {
+type QueryNextDrawRequest struct {
 }
 
-func (m *QueryDrawRequest) Reset()         { *m = QueryDrawRequest{} }
-func (m *QueryDrawRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryDrawRequest) ProtoMessage()    {}
-func (*QueryDrawRequest) Descriptor() ([]byte, []int) {
+func (m *QueryNextDrawRequest) Reset()         { *m = QueryNextDrawRequest{} }
+func (m *QueryNextDrawRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryNextDrawRequest) ProtoMessage()    {}
+func (*QueryNextDrawRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_48ba61453303e825, []int{2}
 }
-func (m *QueryDrawRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryNextDrawRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryDrawRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryNextDrawRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryDrawRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryNextDrawRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -154,35 +154,35 @@ func (m *QueryDrawRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *QueryDrawRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryDrawRequest.Merge(m, src)
+func (m *QueryNextDrawRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryNextDrawRequest.Merge(m, src)
 }
-func (m *QueryDrawRequest) XXX_Size() int {
+func (m *QueryNextDrawRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryDrawRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryDrawRequest.DiscardUnknown(m)
+func (m *QueryNextDrawRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryNextDrawRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryDrawRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryNextDrawRequest proto.InternalMessageInfo
 
 // QueryDrawResponse is the response type for the Query/Draw RPC method
-type QueryDrawResponse struct {
+type QueryNextDrawResponse struct {
 	Draw Draw `protobuf:"bytes,1,opt,name=draw,proto3" json:"draw"`
 }
 
-func (m *QueryDrawResponse) Reset()         { *m = QueryDrawResponse{} }
-func (m *QueryDrawResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryDrawResponse) ProtoMessage()    {}
-func (*QueryDrawResponse) Descriptor() ([]byte, []int) {
+func (m *QueryNextDrawResponse) Reset()         { *m = QueryNextDrawResponse{} }
+func (m *QueryNextDrawResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryNextDrawResponse) ProtoMessage()    {}
+func (*QueryNextDrawResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_48ba61453303e825, []int{3}
 }
-func (m *QueryDrawResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryNextDrawResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryDrawResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryNextDrawResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryDrawResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryNextDrawResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -192,23 +192,122 @@ func (m *QueryDrawResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *QueryDrawResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryDrawResponse.Merge(m, src)
+func (m *QueryNextDrawResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryNextDrawResponse.Merge(m, src)
 }
-func (m *QueryDrawResponse) XXX_Size() int {
+func (m *QueryNextDrawResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryDrawResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryDrawResponse.DiscardUnknown(m)
+func (m *QueryNextDrawResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryNextDrawResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryDrawResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryNextDrawResponse proto.InternalMessageInfo
 
-func (m *QueryDrawResponse) GetDraw() Draw {
+func (m *QueryNextDrawResponse) GetDraw() Draw {
 	if m != nil {
 		return m.Draw
 	}
 	return Draw{}
+}
+
+// QueryPastDrawsRequest is the request type for the Query/PastDraws RPC method.
+type QueryPastDrawsRequest struct {
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryPastDrawsRequest) Reset()         { *m = QueryPastDrawsRequest{} }
+func (m *QueryPastDrawsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryPastDrawsRequest) ProtoMessage()    {}
+func (*QueryPastDrawsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_48ba61453303e825, []int{4}
+}
+func (m *QueryPastDrawsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPastDrawsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPastDrawsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPastDrawsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPastDrawsRequest.Merge(m, src)
+}
+func (m *QueryPastDrawsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPastDrawsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPastDrawsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPastDrawsRequest proto.InternalMessageInfo
+
+func (m *QueryPastDrawsRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryPastDrawsResponse is the response type for the Query/PastDraws RPC method
+type QueryPastDrawsResponse struct {
+	Draws      HistoricalDrawsData `protobuf:"bytes,1,opt,name=draws,proto3" json:"draws"`
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryPastDrawsResponse) Reset()         { *m = QueryPastDrawsResponse{} }
+func (m *QueryPastDrawsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryPastDrawsResponse) ProtoMessage()    {}
+func (*QueryPastDrawsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_48ba61453303e825, []int{5}
+}
+func (m *QueryPastDrawsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPastDrawsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPastDrawsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPastDrawsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPastDrawsResponse.Merge(m, src)
+}
+func (m *QueryPastDrawsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPastDrawsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPastDrawsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPastDrawsResponse proto.InternalMessageInfo
+
+func (m *QueryPastDrawsResponse) GetDraws() HistoricalDrawsData {
+	if m != nil {
+		return m.Draws
+	}
+	return HistoricalDrawsData{}
+}
+
+func (m *QueryPastDrawsResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method.
@@ -219,7 +318,7 @@ func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
 func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsRequest) ProtoMessage()    {}
 func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_48ba61453303e825, []int{4}
+	return fileDescriptor_48ba61453303e825, []int{6}
 }
 func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -257,7 +356,7 @@ func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
 func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsResponse) ProtoMessage()    {}
 func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_48ba61453303e825, []int{5}
+	return fileDescriptor_48ba61453303e825, []int{7}
 }
 func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -296,8 +395,10 @@ func (m *QueryParamsResponse) GetParams() Params {
 func init() {
 	proto.RegisterType((*QueryTicketsRequest)(nil), "cosmicbet.wta.v1beta1.QueryTicketsRequest")
 	proto.RegisterType((*QueryTicketsResponse)(nil), "cosmicbet.wta.v1beta1.QueryTicketsResponse")
-	proto.RegisterType((*QueryDrawRequest)(nil), "cosmicbet.wta.v1beta1.QueryDrawRequest")
-	proto.RegisterType((*QueryDrawResponse)(nil), "cosmicbet.wta.v1beta1.QueryDrawResponse")
+	proto.RegisterType((*QueryNextDrawRequest)(nil), "cosmicbet.wta.v1beta1.QueryNextDrawRequest")
+	proto.RegisterType((*QueryNextDrawResponse)(nil), "cosmicbet.wta.v1beta1.QueryNextDrawResponse")
+	proto.RegisterType((*QueryPastDrawsRequest)(nil), "cosmicbet.wta.v1beta1.QueryPastDrawsRequest")
+	proto.RegisterType((*QueryPastDrawsResponse)(nil), "cosmicbet.wta.v1beta1.QueryPastDrawsResponse")
 	proto.RegisterType((*QueryParamsRequest)(nil), "cosmicbet.wta.v1beta1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "cosmicbet.wta.v1beta1.QueryParamsResponse")
 }
@@ -305,38 +406,43 @@ func init() {
 func init() { proto.RegisterFile("cosmicbet/wta/v1beta1/query.proto", fileDescriptor_48ba61453303e825) }
 
 var fileDescriptor_48ba61453303e825 = []byte{
-	// 488 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0xc1, 0x6b, 0x13, 0x41,
-	0x18, 0xc5, 0x33, 0x35, 0xa6, 0x30, 0x5e, 0x74, 0x8c, 0x20, 0x5b, 0x33, 0xad, 0x2b, 0x36, 0x35,
-	0xc2, 0x0c, 0xad, 0x78, 0x12, 0x04, 0x8b, 0x28, 0x78, 0xaa, 0xc1, 0x93, 0xe0, 0x61, 0x36, 0x19,
-	0xc6, 0xc5, 0x64, 0x67, 0xbb, 0x33, 0x31, 0xf6, 0xe2, 0xc1, 0x83, 0x07, 0x4f, 0x82, 0x67, 0xf1,
-	0xdf, 0xe9, 0xb1, 0xe0, 0xc5, 0x93, 0x48, 0xe2, 0x1f, 0x22, 0x3b, 0xf3, 0xa5, 0xee, 0xc2, 0xee,
-	0x36, 0xb7, 0x65, 0xf6, 0x7d, 0xef, 0xfd, 0xf6, 0x7d, 0x3b, 0xf8, 0xf6, 0x48, 0x9b, 0x69, 0x3c,
-	0x8a, 0xa4, 0xe5, 0x73, 0x2b, 0xf8, 0xfb, 0xfd, 0x48, 0x5a, 0xb1, 0xcf, 0x8f, 0x67, 0x32, 0x3b,
-	0x61, 0x69, 0xa6, 0xad, 0x26, 0x37, 0xce, 0x25, 0x6c, 0x6e, 0x05, 0x03, 0x49, 0xd0, 0x55, 0x5a,
-	0x69, 0xa7, 0xe0, 0xf9, 0x93, 0x17, 0x07, 0xb7, 0x94, 0xd6, 0x6a, 0x22, 0xb9, 0x48, 0x63, 0x2e,
-	0x92, 0x44, 0x5b, 0x61, 0x63, 0x9d, 0x18, 0x78, 0x3b, 0xc8, 0xad, 0xb4, 0xe1, 0x91, 0x30, 0xd2,
-	0x67, 0x9c, 0x27, 0xa6, 0x42, 0xc5, 0x89, 0x13, 0x83, 0x36, 0xac, 0x26, 0x9b, 0xea, 0xb1, 0x9c,
-	0x98, 0x66, 0x4d, 0x2a, 0x32, 0x31, 0x05, 0x4d, 0xf8, 0x06, 0x5f, 0x7f, 0x99, 0x27, 0xbd, 0x8a,
-	0x47, 0xef, 0xa4, 0x35, 0x43, 0x79, 0x3c, 0x93, 0xc6, 0x92, 0x67, 0x18, 0xff, 0x8f, 0xbc, 0x89,
-	0x76, 0xd0, 0xde, 0x95, 0x83, 0x5d, 0xe6, 0xf9, 0x58, 0xce, 0xc7, 0x7c, 0x07, 0xe0, 0xc9, 0x8e,
-	0x84, 0x92, 0x30, 0x3b, 0x2c, 0x4c, 0x86, 0x3f, 0x10, 0xee, 0x96, 0xfd, 0x4d, 0xaa, 0x13, 0x23,
-	0xc9, 0x63, 0xbc, 0x69, 0xfd, 0x11, 0xb8, 0x53, 0x56, 0x59, 0x24, 0x83, 0xc1, 0xc3, 0xf6, 0xe9,
-	0xef, 0xed, 0xd6, 0x70, 0x35, 0x44, 0x9e, 0x97, 0x00, 0x37, 0x9c, 0x45, 0xff, 0x42, 0x40, 0x1f,
-	0x5e, 0x22, 0x24, 0xf8, 0xaa, 0x03, 0x7c, 0x9a, 0x89, 0x39, 0x7c, 0x41, 0xf8, 0x02, 0x5f, 0x2b,
-	0x9c, 0x01, 0xf1, 0x43, 0xdc, 0x1e, 0x67, 0x62, 0x0e, 0xb8, 0x5b, 0x35, 0xb8, 0xf9, 0x08, 0xb0,
-	0x3a, 0x79, 0xd8, 0xc5, 0xc4, 0x79, 0x1d, 0xb9, 0xd6, 0x57, 0x09, 0x43, 0xa8, 0x7d, 0x75, 0x0a,
-	0x19, 0x8f, 0x70, 0xc7, 0x6f, 0x07, 0x52, 0x7a, 0x35, 0x29, 0x7e, 0x0c, 0x72, 0x60, 0xe4, 0xe0,
-	0xfb, 0x25, 0x7c, 0xd9, 0x99, 0x92, 0x2f, 0x08, 0x6f, 0x42, 0x6f, 0x64, 0x50, 0x63, 0x51, 0xb1,
-	0xf5, 0xe0, 0xfe, 0x5a, 0x5a, 0xcf, 0x1a, 0xee, 0x7e, 0xfa, 0xf9, 0xf7, 0xdb, 0xc6, 0x0e, 0xa1,
-	0xbc, 0xfa, 0x37, 0x5b, 0x6d, 0xea, 0x23, 0x6e, 0xe7, 0xa5, 0x90, 0x7e, 0x93, 0x79, 0xa1, 0xfd,
-	0x60, 0xef, 0x62, 0x21, 0x20, 0xdc, 0x71, 0x08, 0x3d, 0xb2, 0x55, 0x83, 0x90, 0x2f, 0x80, 0x7c,
-	0x46, 0xb8, 0xe3, 0xfb, 0x22, 0xf7, 0x9a, 0x9c, 0x4b, 0x0b, 0x0a, 0x06, 0xeb, 0x48, 0x01, 0xe3,
-	0xae, 0xc3, 0xd8, 0x26, 0x3d, 0xde, 0x74, 0xe1, 0x0e, 0x9f, 0x9c, 0x2e, 0x28, 0x3a, 0x5b, 0x50,
-	0xf4, 0x67, 0x41, 0xd1, 0xd7, 0x25, 0x6d, 0x9d, 0x2d, 0x69, 0xeb, 0xd7, 0x92, 0xb6, 0x5e, 0xf7,
-	0x55, 0x6c, 0xdf, 0xce, 0x22, 0x36, 0xd2, 0xd3, 0x82, 0xc5, 0x44, 0x8e, 0x95, 0xcc, 0xf8, 0x07,
-	0xe7, 0x65, 0x4f, 0x52, 0x69, 0xa2, 0x8e, 0xbb, 0xb4, 0x0f, 0xfe, 0x05, 0x00, 0x00, 0xff, 0xff,
-	0x5a, 0xf7, 0xa5, 0x87, 0x98, 0x04, 0x00, 0x00,
+	// 572 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x94, 0x4f, 0x6b, 0x13, 0x41,
+	0x18, 0xc6, 0x33, 0xa5, 0x4d, 0x75, 0xbc, 0x8d, 0x69, 0x91, 0xd5, 0x6e, 0xd3, 0x15, 0xfb, 0x27,
+	0xda, 0x19, 0x5a, 0xf1, 0x24, 0x08, 0x96, 0x52, 0x3d, 0x95, 0x1a, 0x3c, 0x09, 0x22, 0xb3, 0x9b,
+	0x61, 0x5d, 0x4c, 0x76, 0xb6, 0x3b, 0x13, 0x93, 0x5e, 0x3d, 0x78, 0xf0, 0xa2, 0xd0, 0x0f, 0xe0,
+	0xd9, 0x0f, 0x22, 0xf4, 0x58, 0xf0, 0xe2, 0x49, 0x24, 0xf1, 0x83, 0xc8, 0xce, 0xbc, 0x1b, 0x93,
+	0x90, 0x5d, 0x73, 0xe8, 0x2d, 0x4c, 0x9e, 0xf7, 0x79, 0x7e, 0xfb, 0xee, 0xb3, 0x83, 0x37, 0x02,
+	0xa9, 0x3a, 0x51, 0xe0, 0x0b, 0xcd, 0x7a, 0x9a, 0xb3, 0xf7, 0x7b, 0xbe, 0xd0, 0x7c, 0x8f, 0x9d,
+	0x76, 0x45, 0x7a, 0x46, 0x93, 0x54, 0x6a, 0x49, 0x56, 0x46, 0x12, 0xda, 0xd3, 0x9c, 0x82, 0xc4,
+	0xa9, 0x85, 0x32, 0x94, 0x46, 0xc1, 0xb2, 0x5f, 0x56, 0xec, 0xdc, 0x09, 0xa5, 0x0c, 0xdb, 0x82,
+	0xf1, 0x24, 0x62, 0x3c, 0x8e, 0xa5, 0xe6, 0x3a, 0x92, 0xb1, 0x82, 0x7f, 0x1b, 0x99, 0x95, 0x54,
+	0xcc, 0xe7, 0x4a, 0xd8, 0x8c, 0x51, 0x62, 0xc2, 0xc3, 0x28, 0x36, 0x62, 0xd0, 0x7a, 0xb3, 0xc9,
+	0x3a, 0xb2, 0x25, 0xda, 0xaa, 0x5c, 0x93, 0xf0, 0x94, 0x77, 0x40, 0xe3, 0xbd, 0xc6, 0x37, 0x5f,
+	0x64, 0x49, 0x2f, 0xa3, 0xe0, 0x9d, 0xd0, 0xaa, 0x29, 0x4e, 0xbb, 0x42, 0x69, 0x72, 0x84, 0xf1,
+	0xbf, 0xc8, 0x5b, 0xa8, 0x8e, 0xb6, 0x6f, 0xec, 0x6f, 0x52, 0xcb, 0x47, 0x33, 0x3e, 0x6a, 0x77,
+	0x00, 0x9e, 0xf4, 0x84, 0x87, 0x02, 0x66, 0x9b, 0x63, 0x93, 0xde, 0x57, 0x84, 0x6b, 0x93, 0xfe,
+	0x2a, 0x91, 0xb1, 0x12, 0xe4, 0x09, 0x5e, 0xd6, 0xf6, 0x08, 0xdc, 0x5d, 0x3a, 0x73, 0x91, 0x14,
+	0x06, 0x0f, 0x16, 0x2f, 0x7e, 0xad, 0x57, 0x9a, 0xf9, 0x10, 0x79, 0x36, 0x01, 0xb8, 0x60, 0x2c,
+	0xb6, 0xfe, 0x0b, 0x68, 0xc3, 0x27, 0x08, 0x57, 0x01, 0xf0, 0x58, 0xf4, 0xf5, 0x61, 0xca, 0x7b,
+	0xf0, 0x14, 0xde, 0x31, 0x5e, 0x99, 0x3a, 0x07, 0xf2, 0x47, 0x78, 0xb1, 0x95, 0xf2, 0x1e, 0x60,
+	0xdf, 0x2e, 0xc0, 0xce, 0x46, 0x80, 0xd9, 0xc8, 0xbd, 0x37, 0xe0, 0x77, 0xc2, 0x95, 0xf1, 0xbb,
+	0xf2, 0x55, 0x7f, 0x43, 0x78, 0x75, 0x3a, 0x01, 0x90, 0x8f, 0xf0, 0x52, 0xc6, 0x90, 0xaf, 0xba,
+	0x51, 0xc0, 0xfc, 0x3c, 0x52, 0x5a, 0xa6, 0x51, 0xc0, 0xdb, 0x66, 0xfc, 0x90, 0x6b, 0x0e, 0x8f,
+	0x60, 0xc7, 0xaf, 0x6e, 0xe9, 0x35, 0x4c, 0x00, 0x35, 0xab, 0x62, 0xbe, 0xf2, 0x26, 0x74, 0x31,
+	0x3f, 0x05, 0xfa, 0xc7, 0xb8, 0x6a, 0x2b, 0x0b, 0xf8, 0x6b, 0x05, 0xf8, 0x76, 0x0c, 0x88, 0x61,
+	0x64, 0xff, 0xfb, 0x22, 0x5e, 0x32, 0xa6, 0xe4, 0x13, 0xc2, 0xcb, 0x50, 0x26, 0x52, 0xb4, 0x81,
+	0x19, 0x9f, 0x82, 0x73, 0x7f, 0x2e, 0xad, 0x65, 0xf5, 0x36, 0x3f, 0xfc, 0xf8, 0x73, 0xbe, 0x50,
+	0x27, 0x2e, 0x9b, 0xfd, 0xed, 0xe5, 0xf5, 0xfd, 0x8c, 0xf0, 0xb5, 0xbc, 0x59, 0xa4, 0x34, 0x61,
+	0xaa, 0x97, 0xce, 0x83, 0xf9, 0xc4, 0xc0, 0xb3, 0x6d, 0x78, 0x3c, 0x52, 0x2f, 0xe0, 0x89, 0x45,
+	0x5f, 0xef, 0x66, 0x2f, 0x97, 0x9c, 0x23, 0x7c, 0x7d, 0xd4, 0x1c, 0x52, 0x9a, 0x32, 0x5d, 0x61,
+	0x67, 0x77, 0x4e, 0x35, 0x40, 0xed, 0x18, 0xa8, 0xbb, 0x64, 0x83, 0x15, 0x5d, 0x50, 0xca, 0x42,
+	0x29, 0xf2, 0x11, 0xe1, 0xaa, 0x7d, 0xaf, 0x64, 0xa7, 0x3c, 0x64, 0xac, 0x48, 0x4e, 0x63, 0x1e,
+	0x29, 0xc0, 0xdc, 0x33, 0x30, 0xeb, 0x64, 0x8d, 0x95, 0xdd, 0x96, 0x07, 0x4f, 0x2f, 0x06, 0x2e,
+	0xba, 0x1c, 0xb8, 0xe8, 0xf7, 0xc0, 0x45, 0x5f, 0x86, 0x6e, 0xe5, 0x72, 0xe8, 0x56, 0x7e, 0x0e,
+	0xdd, 0xca, 0xab, 0xad, 0x30, 0xd2, 0x6f, 0xbb, 0x3e, 0x0d, 0x64, 0x67, 0xcc, 0xa2, 0x2d, 0x5a,
+	0xa1, 0x48, 0x59, 0xdf, 0x78, 0xe9, 0xb3, 0x44, 0x28, 0xbf, 0x6a, 0x6e, 0xdc, 0x87, 0x7f, 0x03,
+	0x00, 0x00, 0xff, 0xff, 0x77, 0xf5, 0xc9, 0x76, 0x55, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -353,8 +459,9 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Tickets queries all the stored tickets for the next draw
 	Tickets(ctx context.Context, in *QueryTicketsRequest, opts ...grpc.CallOption) (*QueryTicketsResponse, error)
-	// Draw queries the next planned drawn
-	Draw(ctx context.Context, in *QueryDrawRequest, opts ...grpc.CallOption) (*QueryDrawResponse, error)
+	// NextDraw queries the next planned drawn
+	NextDraw(ctx context.Context, in *QueryNextDrawRequest, opts ...grpc.CallOption) (*QueryNextDrawResponse, error)
+	PastDraws(ctx context.Context, in *QueryPastDrawsRequest, opts ...grpc.CallOption) (*QueryPastDrawsResponse, error)
 	// Params queries the wta parameters
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 }
@@ -376,9 +483,18 @@ func (c *queryClient) Tickets(ctx context.Context, in *QueryTicketsRequest, opts
 	return out, nil
 }
 
-func (c *queryClient) Draw(ctx context.Context, in *QueryDrawRequest, opts ...grpc.CallOption) (*QueryDrawResponse, error) {
-	out := new(QueryDrawResponse)
-	err := c.cc.Invoke(ctx, "/cosmicbet.wta.v1beta1.Query/Draw", in, out, opts...)
+func (c *queryClient) NextDraw(ctx context.Context, in *QueryNextDrawRequest, opts ...grpc.CallOption) (*QueryNextDrawResponse, error) {
+	out := new(QueryNextDrawResponse)
+	err := c.cc.Invoke(ctx, "/cosmicbet.wta.v1beta1.Query/NextDraw", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) PastDraws(ctx context.Context, in *QueryPastDrawsRequest, opts ...grpc.CallOption) (*QueryPastDrawsResponse, error) {
+	out := new(QueryPastDrawsResponse)
+	err := c.cc.Invoke(ctx, "/cosmicbet.wta.v1beta1.Query/PastDraws", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -398,8 +514,9 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 type QueryServer interface {
 	// Tickets queries all the stored tickets for the next draw
 	Tickets(context.Context, *QueryTicketsRequest) (*QueryTicketsResponse, error)
-	// Draw queries the next planned drawn
-	Draw(context.Context, *QueryDrawRequest) (*QueryDrawResponse, error)
+	// NextDraw queries the next planned drawn
+	NextDraw(context.Context, *QueryNextDrawRequest) (*QueryNextDrawResponse, error)
+	PastDraws(context.Context, *QueryPastDrawsRequest) (*QueryPastDrawsResponse, error)
 	// Params queries the wta parameters
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 }
@@ -411,8 +528,11 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) Tickets(ctx context.Context, req *QueryTicketsRequest) (*QueryTicketsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Tickets not implemented")
 }
-func (*UnimplementedQueryServer) Draw(ctx context.Context, req *QueryDrawRequest) (*QueryDrawResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Draw not implemented")
+func (*UnimplementedQueryServer) NextDraw(ctx context.Context, req *QueryNextDrawRequest) (*QueryNextDrawResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NextDraw not implemented")
+}
+func (*UnimplementedQueryServer) PastDraws(ctx context.Context, req *QueryPastDrawsRequest) (*QueryPastDrawsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PastDraws not implemented")
 }
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
@@ -440,20 +560,38 @@ func _Query_Tickets_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Draw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryDrawRequest)
+func _Query_NextDraw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryNextDrawRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).Draw(ctx, in)
+		return srv.(QueryServer).NextDraw(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cosmicbet.wta.v1beta1.Query/Draw",
+		FullMethod: "/cosmicbet.wta.v1beta1.Query/NextDraw",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Draw(ctx, req.(*QueryDrawRequest))
+		return srv.(QueryServer).NextDraw(ctx, req.(*QueryNextDrawRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_PastDraws_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPastDrawsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PastDraws(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmicbet.wta.v1beta1.Query/PastDraws",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PastDraws(ctx, req.(*QueryPastDrawsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -485,8 +623,12 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Tickets_Handler,
 		},
 		{
-			MethodName: "Draw",
-			Handler:    _Query_Draw_Handler,
+			MethodName: "NextDraw",
+			Handler:    _Query_NextDraw_Handler,
+		},
+		{
+			MethodName: "PastDraws",
+			Handler:    _Query_PastDraws_Handler,
 		},
 		{
 			MethodName: "Params",
@@ -577,7 +719,7 @@ func (m *QueryTicketsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryDrawRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryNextDrawRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -587,12 +729,12 @@ func (m *QueryDrawRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryDrawRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryNextDrawRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryDrawRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryNextDrawRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -600,7 +742,7 @@ func (m *QueryDrawRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryDrawResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryNextDrawResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -610,18 +752,98 @@ func (m *QueryDrawResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryDrawResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryNextDrawResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryDrawResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryNextDrawResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
 		size, err := m.Draw.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPastDrawsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPastDrawsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPastDrawsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPastDrawsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPastDrawsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPastDrawsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	{
+		size, err := m.Draws.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -728,7 +950,7 @@ func (m *QueryTicketsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryDrawRequest) Size() (n int) {
+func (m *QueryNextDrawRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -737,7 +959,7 @@ func (m *QueryDrawRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryDrawResponse) Size() (n int) {
+func (m *QueryNextDrawResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -745,6 +967,34 @@ func (m *QueryDrawResponse) Size() (n int) {
 	_ = l
 	l = m.Draw.Size()
 	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryPastDrawsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryPastDrawsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Draws.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -979,7 +1229,7 @@ func (m *QueryTicketsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryDrawRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryNextDrawRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1002,10 +1252,10 @@ func (m *QueryDrawRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryDrawRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryNextDrawRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryDrawRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryNextDrawRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1029,7 +1279,7 @@ func (m *QueryDrawRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryDrawResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryNextDrawResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1052,10 +1302,10 @@ func (m *QueryDrawResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryDrawResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryNextDrawResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryDrawResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryNextDrawResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1088,6 +1338,211 @@ func (m *QueryDrawResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Draw.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPastDrawsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPastDrawsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPastDrawsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPastDrawsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPastDrawsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPastDrawsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Draws", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Draws.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

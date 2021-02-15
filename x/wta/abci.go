@@ -1,6 +1,8 @@
 package wta
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmicbet/ledger/x/wta/keeper"
@@ -19,13 +21,15 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 
 	tickets := k.GetTickets(ctx)
+
+	var winningTicket *types.Ticket
 	if len(tickets) > 0 {
 
 		// Get a random winning ticket
 		r := types.NewRandFromCtx(ctx)
-		ticket := tickets[r.Intn(len(tickets))]
+		winningTicket = &tickets[r.Intn(len(tickets))]
 
-		winner, err := sdk.AccAddressFromBech32(ticket.Owner)
+		winner, err := sdk.AccAddressFromBech32(winningTicket.Owner)
 		if err != nil {
 			panic(err)
 		}
@@ -35,15 +39,34 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		if err != nil {
 			panic(err)
 		}
+
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(
+				types.EventTypeWinnerDrawn,
+				sdk.NewAttribute(types.AttributeKeyWinnerAddress, winningTicket.Owner),
+				sdk.NewAttribute(types.AttributeKeyWonAmount, draw.Prize.String()),
+			),
+		)
 	}
+
+	// Save the past draw
+	k.SaveHistoricalDraw(ctx, types.NewHistoricalDrawData(draw, winningTicket))
 
 	// Remove all the tickets
 	k.WipeCurrentTickets(ctx)
 
 	// Create a new draw
 	endTime := ctx.BlockTime().Add(k.GetParams(ctx).DrawDuration)
-	err := k.SaveCurrentDraw(ctx, types.NewDraw(sdk.NewCoins(), endTime))
+	newDraw := types.NewDraw(sdk.NewCoins(), endTime)
+	err := k.SaveCurrentDraw(ctx, newDraw)
 	if err != nil {
 		panic(err)
 	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeNewDraw,
+			sdk.NewAttribute(types.AttributeKeyDrawClosing, newDraw.EndTime.Format(time.RFC3339)),
+		),
+	)
 }

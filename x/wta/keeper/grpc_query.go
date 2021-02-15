@@ -53,19 +53,47 @@ func (k querier) Tickets(ctx context.Context, req *types.QueryTicketsRequest) (*
 	return &types.QueryTicketsResponse{Tickets: tickets, Pagination: pageRes}, err
 }
 
-// Draw queries the details of the next draw
-func (k querier) Draw(ctx context.Context, _ *types.QueryDrawRequest) (*types.QueryDrawResponse, error) {
+// NextDraw queries the details of the next draw
+func (k querier) NextDraw(ctx context.Context, _ *types.QueryNextDrawRequest) (*types.QueryNextDrawResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	draw := k.GetCurrentDraw(sdkCtx)
 
-	return &types.QueryDrawResponse{Draw: draw}, nil
+	return &types.QueryNextDrawResponse{Draw: draw}, nil
+}
+
+// PastDraws queries the details of the past draws
+func (k querier) PastDraws(ctx context.Context, req *types.QueryPastDrawsRequest) (*types.QueryPastDrawsResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	store := sdkCtx.KVStore(k.storeKey)
+	drawsStore := prefix.NewStore(store, types.HistoricalDrawsStoreKey)
+
+	var draws types.HistoricalDrawsData
+	pageRes, err := query.FilteredPaginate(drawsStore, req.Pagination, func(_ []byte, value []byte, accumulate bool) (bool, error) {
+		data, err := types.UnmarshalHistoricalDraw(k.cdc, value)
+		if err != nil {
+			return false, err
+		}
+
+		if accumulate {
+			draws.Draws = append(draws.Draws, data)
+		}
+
+		return true, nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryPastDrawsResponse{Draws: draws, Pagination: pageRes}, nil
 }
 
 // Params queries the currently stored parameters
-func (k Keeper) Params(goCtx context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	params := k.GetParams(ctx)
+	params := k.GetParams(sdkCtx)
 	return &types.QueryParamsResponse{Params: params}, nil
 }
