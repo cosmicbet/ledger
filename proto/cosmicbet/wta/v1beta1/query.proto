@@ -1,0 +1,62 @@
+syntax = "proto3";
+package cosmicbet.wta.v1beta1;
+
+option go_package = "github.com/cosmicbet/ledger/x/wta/types";
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmicbet/wta/v1beta1/models.proto";
+import "cosmicbet/wta/v1beta1/params.proto";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Tickets queries all the stored tickets for the next draw
+  rpc Tickets(QueryTicketsRequest) returns (QueryTicketsResponse) {
+    option (google.api.http).get = "/cosmicbet/wta/v1beta1/tickets";
+  }
+
+  // Draw queries the next planned drawn
+  rpc Draw(QueryDrawRequest) returns (QueryDrawResponse) {
+    option (google.api.http).get = "/cosmicbet/wta/v1beta1/draw";
+  }
+
+  // Params queries the wta parameters
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/cosmicbet/wta/v1beta1/params";
+  }
+}
+
+// ___________________________________________________________________________________________________________________
+
+// QueryTicketsRequest is the request type for the Query/Tickets RPC method.
+message QueryTicketsRequest {
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryTicketsResponse is the response type for the Query/Tickets RPC method
+message QueryTicketsResponse {
+  cosmicbet.wta.v1beta1.Tickets tickets = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// ___________________________________________________________________________________________________________________
+
+// QueryDrawRequest is the request type for the Query/Draw RPC method.
+message QueryDrawRequest {}
+
+// QueryDrawResponse is the response type for the Query/Draw RPC method
+message QueryDrawResponse {
+  cosmicbet.wta.v1beta1.Draw draw = 1 [(gogoproto.nullable) = false];
+}
+
+// ___________________________________________________________________________________________________________________
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method
+message QueryParamsResponse {
+  cosmicbet.wta.v1beta1.Params params = 1 [(gogoproto.nullable) = false];
+}

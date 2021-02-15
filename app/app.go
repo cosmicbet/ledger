@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	wtakeeper "github.com/cosmicbet/ledger/x/wta/keeper"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/spf13/cast"
@@ -82,7 +84,9 @@ import (
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	appparams "github.com/cosmic-casino/ledger/app/params"
+	appparams "github.com/cosmicbet/ledger/app/params"
+	wta "github.com/cosmicbet/ledger/x/wta"
+	wtatypes "github.com/cosmicbet/ledger/x/wta/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
@@ -92,14 +96,12 @@ const Name = "casino"
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
 	var govProposalHandlers []govclient.ProposalHandler
-	// this line is used by starport scaffolding # stargate/app/govProposalHandlers
 
 	govProposalHandlers = append(govProposalHandlers,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
 		upgradeclient.CancelProposalHandler,
-		// this line is used by starport scaffolding # stargate/app/govProposalHandler
 	)
 
 	return govProposalHandlers
@@ -129,6 +131,9 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
+
+		// Custom modules
+		wta.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -140,6 +145,10 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+
+		// Custom modules
+		wtatypes.PrizeCollectorName: nil,
+		wtatypes.PrizeBurnerName:    {authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -199,6 +208,9 @@ type App struct {
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
+	// Custom modules
+	WtaKeeper wtakeeper.Keeper
+
 	// the module manager
 	mm *module.Manager
 }
@@ -226,6 +238,9 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
+
+		// Custom modules
+		wtatypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -285,7 +300,14 @@ func New(
 		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
 
-	// ... other modules keepers
+	// Custom modules
+	app.WtaKeeper = wtakeeper.NewKeeper(
+		appCodec,
+		keys[wtatypes.StoreKey],
+		app.GetSubspace(wtatypes.ModuleName),
+		app.BankKeeper,
+		app.DistrKeeper,
+	)
 
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
@@ -354,6 +376,9 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
+
+		// Custom modules
+		wta.NewAppModule(appCodec, app.WtaKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -363,6 +388,9 @@ func New(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
+
+		// Custom modules
+		wtatypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName)
@@ -386,6 +414,9 @@ func New(
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
+
+		// Custom modules
+		wtatypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -578,7 +609,9 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
-	// this line is used by starport scaffolding # stargate/app/paramSubspace
+
+	// Custom module
+	paramsKeeper.Subspace(wtatypes.ModuleName)
 
 	return paramsKeeper
 }

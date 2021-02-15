@@ -1,10 +1,11 @@
-module github.com/cosmic-casino/ledger
+module github.com/cosmicbet/ledger
 
 go 1.15
 
 require (
 	github.com/cosmos/cosmos-sdk v0.41.0
 	github.com/gogo/protobuf v1.3.3
+	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/spf13/cast v1.3.1

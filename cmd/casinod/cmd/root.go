@@ -8,11 +8,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/snapshots"
 
-	"github.com/cosmic-casino/ledger/app/params"
+	"github.com/cosmicbet/ledger/app/params"
 
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
@@ -35,11 +34,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	"github.com/cosmic-casino/ledger/app"
+	"github.com/cosmicbet/ledger/app"
 	// this line is used by starport scaffolding # stargate/root/import
 )
-
-var ChainID string
 
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
@@ -71,10 +68,6 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	}
 
 	initRootCmd(rootCmd, encodingConfig)
-	overwriteFlagDefaults(rootCmd, map[string]string{
-		flags.FlagChainID:        ChainID,
-		flags.FlagKeyringBackend: "test",
-	})
 
 	return rootCmd, encodingConfig
 }
@@ -261,20 +254,4 @@ func (a appCreator) appExport(
 	}
 
 	return anApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
-}
-
-func overwriteFlagDefaults(c *cobra.Command, defaults map[string]string) {
-	set := func(s *pflag.FlagSet, key, val string) {
-		if f := s.Lookup(key); f != nil {
-			f.DefValue = val
-			f.Value.Set(val) // nolint:errcheck
-		}
-	}
-	for key, val := range defaults {
-		set(c.Flags(), key, val)
-		set(c.PersistentFlags(), key, val)
-	}
-	for _, c := range c.Commands() {
-		overwriteFlagDefaults(c, defaults)
-	}
 }

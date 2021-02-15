@@ -1,0 +1,27 @@
+syntax = "proto3";
+package cosmicbet.wta.v1beta1;
+
+option go_package = "github.com/cosmicbet/ledger/x/wta/types";
+
+import "gogoproto/gogo.proto";
+
+// Msg defines the wta message service.
+service Msg {
+  // BuyTickets defines the method to buy one or more lottery tickets
+  rpc BuyTickets(MsgBuyTickets) returns (MsgBuyTicketsResponse);
+}
+
+// ___________________________________________________________________________________________________________________
+
+// MsgBuyTickets represents the message to use to buy one or more lottery
+// tickets.
+message MsgBuyTickets {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  int32 quantity = 1 [ (gogoproto.moretags) = "yaml:\"quantity\"" ];
+  string buyer = 2 [ (gogoproto.moretags) = "yaml:\"buyer\"" ];
+}
+
+// MsgBuyTicketsResponse defines the Msg/BuyTickets response type.
+message MsgBuyTicketsResponse {}

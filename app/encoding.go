@@ -3,7 +3,7 @@ package app
 import (
 	"github.com/cosmos/cosmos-sdk/std"
 
-	"github.com/cosmic-casino/ledger/app/params"
+	"github.com/cosmicbet/ledger/app/params"
 )
 
 // MakeEncodingConfig creates an EncodingConfig for testing

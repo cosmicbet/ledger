@@ -1,0 +1,34 @@
+syntax = "proto3";
+package cosmicbet.wta.v1beta1;
+
+option go_package = "github.com/cosmicbet/ledger/x/wta/types";
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+// Ticket represents a single entry for the next drawn
+message Ticket {
+  option (gogoproto.equal) = true;
+  option (gogoproto.goproto_stringer) = true;
+
+  string id = 1;
+  string owner = 2;
+  google.protobuf.Timestamp timestamp = 3
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+}
+
+// Tickets represents a slice of ticket objects
+message Tickets {
+  repeated Ticket tickets = 1 [ (gogoproto.nullable) = false ];
+}
+
+// Draw contains the data of the next planned draw
+message Draw {
+  repeated cosmos.base.v1beta1.Coin prize = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  google.protobuf.Timestamp end_time = 2
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+}
