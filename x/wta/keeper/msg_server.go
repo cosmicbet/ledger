@@ -74,5 +74,14 @@ func (k msgServer) BuyTickets(ctx context.Context, msg *types.MsgBuyTickets) (*t
 		)
 	}
 
+	sdkCtx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.TypeMsgBuyTickets),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Buyer),
+		),
+	)
+
 	return &types.MsgBuyTicketsResponse{}, nil
 }
