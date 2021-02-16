@@ -22,7 +22,7 @@ The Winner-Takes-All module emits the following events:
 | buy_ticket [0]      | ticket_buyer        | {BuyerAddress}        |
 | buy_ticket [0]      | ticket_timestamp    | {PurchaseTimestamp}   |
 | prize_increase      | prize_amount        | {TotalPrizeAmount}    |
-| message             | module              | wat                   |
+| message             | module              | wta                   |
 | message             | action              | buy_tickets           |
 | message             | sender              | {senderAddress}       |
 
