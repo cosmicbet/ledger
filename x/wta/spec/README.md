@@ -13,6 +13,6 @@ This module implements a "Winner-Takes-All" style of lottery, in which a single 
 3. **[Messages](03_messages.md)**
     - [Buy tickets](03_messages.md#buy-tickets)
 4. **[Events](04_events.md)**
-    - [EndBlocker](04_events.md#beginblocker)
+    - [BeginBlocker](04_events.md#beginblocker)
     - [Handlers](04_events.md#handlers)
 6. **[Parameters](05_params.md)**
