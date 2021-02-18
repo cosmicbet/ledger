@@ -1,9 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/cosmicbet/ledger/app"
-	wtakeeper "github.com/cosmicbet/ledger/x/wta/keeper"
-	wtatypes "github.com/cosmicbet/ledger/x/wta/types"
+	"testing"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,8 +21,10 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	db "github.com/tendermint/tm-db"
-	"testing"
-	"time"
+
+	"github.com/cosmicbet/ledger/app"
+	wtakeeper "github.com/cosmicbet/ledger/x/wta/keeper"
+	wtatypes "github.com/cosmicbet/ledger/x/wta/types"
 )
 
 func TestKeeperTestSuite(t *testing.T) {

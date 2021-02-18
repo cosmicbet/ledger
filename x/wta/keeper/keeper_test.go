@@ -1,10 +1,12 @@
 package keeper_test
 
 import (
-	wtatypes "github.com/cosmicbet/ledger/x/wta/types"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"time"
+
+	wtatypes "github.com/cosmicbet/ledger/x/wta/types"
 )
 
 func (suite *KeeperTestSuite) Test_WithdrawTicketsCost() {
@@ -271,6 +273,7 @@ func (suite *KeeperTestSuite) Test_TransferDrawPrize() {
 
 			moduleAddr := suite.ak.GetModuleAccount(suite.ctx, wtatypes.PrizeCollectorName)
 			err = suite.bk.SetBalances(suite.ctx, moduleAddr.GetAddress(), uc.prize)
+			suite.Require().NoError(err)
 
 			// Transfer prize
 			err = suite.keeper.TransferDrawPrize(suite.ctx, uc.prize, addr)
