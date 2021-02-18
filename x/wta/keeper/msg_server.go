@@ -58,10 +58,7 @@ func (k msgServer) BuyTickets(ctx context.Context, msg *types.MsgBuyTickets) (*t
 	}
 
 	tickets := k.generateTickets(sdkCtx, msg.Quantity, user)
-	err = k.SaveTickets(sdkCtx, tickets)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrLogic, err.Error())
-	}
+	k.SaveTickets(sdkCtx, tickets)
 
 	for _, t := range tickets {
 		sdkCtx.EventManager().EmitEvent(

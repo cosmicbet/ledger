@@ -35,7 +35,6 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
 	"github.com/cosmicbet/ledger/app"
-	// this line is used by starport scaffolding # stargate/root/import
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -84,7 +83,6 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		AddGenesisAccountCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
-		// this line is used by starport scaffolding # stargate/root/commands
 	)
 
 	a := appCreator{encodingConfig}
@@ -101,7 +99,6 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 
 func addModuleInitFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
-	// this line is used by starport scaffolding # stargate/root/initFlags
 }
 
 func queryCommand() *cobra.Command {
@@ -193,7 +190,6 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		a.encCfg,
-		// this line is used by starport scaffolding # stargate/root/appArgument
 		appOpts,
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
@@ -231,7 +227,6 @@ func (a appCreator) appExport(
 			homePath,
 			uint(1),
 			a.encCfg,
-			// this line is used by starport scaffolding # stargate/root/exportArgument
 			appOpts,
 		)
 
@@ -248,7 +243,6 @@ func (a appCreator) appExport(
 			homePath,
 			uint(1),
 			a.encCfg,
-			// this line is used by starport scaffolding # stargate/root/noHeightExportArgument
 			appOpts,
 		)
 	}

@@ -85,14 +85,11 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	appparams "github.com/cosmicbet/ledger/app/params"
-	wta "github.com/cosmicbet/ledger/x/wta"
+	"github.com/cosmicbet/ledger/x/wta"
 	wtatypes "github.com/cosmicbet/ledger/x/wta/types"
-	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
 const Name = "casino"
-
-// this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
 	var govProposalHandlers []govclient.ProposalHandler
@@ -220,7 +217,6 @@ type App struct {
 func New(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
 	homePath string, invCheckPeriod uint, encodingConfig appparams.EncodingConfig,
-	// this line is used by starport scaffolding # stargate/app/newArgument
 	appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
 
@@ -593,6 +589,17 @@ func GetMaccPerms() map[string][]string {
 		dupMaccPerms[k] = v
 	}
 	return dupMaccPerms
+}
+
+// BlockedAddrs returns all the app's module account addresses that are not
+// allowed to receive external tokens.
+func BlockedAddrs() map[string]bool {
+	blockedAddrs := make(map[string]bool)
+	for acc := range maccPerms {
+		blockedAddrs[authtypes.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]
+	}
+
+	return blockedAddrs
 }
 
 // initParamsKeeper init params keeper and its subspaces

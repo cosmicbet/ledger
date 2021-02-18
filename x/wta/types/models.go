@@ -39,6 +39,15 @@ func MarshalTicket(cdc codec.BinaryMarshaler, ticket Ticket) ([]byte, error) {
 	return cdc.MarshalBinaryBare(&ticket)
 }
 
+// MustMarshalTicket marshals the given ticket into a slice of bytes, and panics on error
+func MustMarshalTicket(cdc codec.BinaryMarshaler, ticket Ticket) []byte {
+	bz, err := MarshalTicket(cdc, ticket)
+	if err != nil {
+		panic(err)
+	}
+	return bz
+}
+
 // UnmarshalTicket reads the provided byte array as a Ticket object
 func UnmarshalTicket(cdc codec.BinaryMarshaler, bz []byte) (Ticket, error) {
 	var ticket Ticket
@@ -90,9 +99,24 @@ func (d Draw) Validate() error {
 	return nil
 }
 
+// Equal tells whether d and e contain the same data
+func (d Draw) Equal(e Draw) bool {
+	return d.Prize.IsEqual(e.Prize) &&
+		d.EndTime.Equal(e.EndTime)
+}
+
 // MarshalDraw marshals the given Draw as a byte array
 func MarshalDraw(cdc codec.BinaryMarshaler, draw Draw) ([]byte, error) {
 	return cdc.MarshalBinaryBare(&draw)
+}
+
+// MustMarshalDraw marshals the given Draw as a byte array and panics on error
+func MustMarshalDraw(cdc codec.BinaryMarshaler, draw Draw) []byte {
+	bz, err := MarshalDraw(cdc, draw)
+	if err != nil {
+		panic(err)
+	}
+	return bz
 }
 
 // UnmarshalDraw reads the given byte slice as a Draw object

@@ -17,15 +17,7 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 
 // InitGenesis initializes the given state
 func (k Keeper) InitGenesis(ctx sdk.Context, state types.GenesisState) {
-	err := k.SaveCurrentDraw(ctx, state.Draw)
-	if err != nil {
-		panic(err)
-	}
-
-	err = k.SaveTickets(ctx, state.Tickets)
-	if err != nil {
-		panic(err)
-	}
-
+	k.SaveCurrentDraw(ctx, state.Draw)
+	k.SaveTickets(ctx, state.Tickets)
 	k.SetParams(ctx, state.Params)
 }

@@ -68,10 +68,7 @@ func (k Keeper) WithdrawTicketsCost(ctx sdk.Context, quantity int32, buyer sdk.A
 		return err
 	}
 
-	err = k.IncrementDrawPrize(ctx, prizeAmount)
-	if err != nil {
-		return err
-	}
+	k.IncrementDrawPrize(ctx, prizeAmount)
 
 	// Send the pool amount to the pool
 	poolAmount := sdk.NewCoin(ticketsTotal.Denom, ticketsTotal.Amount.Mul(params.CommunityPoolPercentage).QuoRaw(100))
@@ -92,17 +89,11 @@ func (k Keeper) WithdrawTicketsCost(ctx sdk.Context, quantity int32, buyer sdk.A
 }
 
 // SaveTickets sets the given tickets for the given user
-func (k Keeper) SaveTickets(ctx sdk.Context, tickets []types.Ticket) error {
+func (k Keeper) SaveTickets(ctx sdk.Context, tickets []types.Ticket) {
 	store := ctx.KVStore(k.storeKey)
 	for _, t := range tickets {
-		bz, err := types.MarshalTicket(k.cdc, t)
-		if err != nil {
-			return err
-		}
-
-		store.Set(types.TicketsStoreKey(t.Id), bz)
+		store.Set(types.TicketsStoreKey(t.Id), types.MustMarshalTicket(k.cdc, t))
 	}
-	return nil
 }
 
 // WipeCurrentTickets removes all the currently stored tickets
@@ -118,7 +109,7 @@ func (k Keeper) WipeCurrentTickets(ctx sdk.Context) {
 // ------------------------------------------------------------------------------------------------------------------
 
 // IncrementDrawPrize increments the current draw prize to the provided amount
-func (k Keeper) IncrementDrawPrize(ctx sdk.Context, amount sdk.Coin) error {
+func (k Keeper) IncrementDrawPrize(ctx sdk.Context, amount sdk.Coin) {
 	draw := k.GetCurrentDraw(ctx)
 	draw.Prize = draw.Prize.Add(amount)
 
@@ -129,7 +120,7 @@ func (k Keeper) IncrementDrawPrize(ctx sdk.Context, amount sdk.Coin) error {
 		),
 	)
 
-	return k.SaveCurrentDraw(ctx, draw)
+	k.SaveCurrentDraw(ctx, draw)
 }
 
 // TransferDrawPrize transfers the provided prize to the specified winner account
@@ -138,15 +129,9 @@ func (k Keeper) TransferDrawPrize(ctx sdk.Context, prize sdk.Coins, winner sdk.A
 }
 
 // SaveCurrentDraw stores the given draw as the next draw
-func (k Keeper) SaveCurrentDraw(ctx sdk.Context, draw types.Draw) error {
+func (k Keeper) SaveCurrentDraw(ctx sdk.Context, draw types.Draw) {
 	store := ctx.KVStore(k.storeKey)
-	bz, err := types.MarshalDraw(k.cdc, draw)
-	if err != nil {
-		return err
-	}
-
-	store.Set(types.CurrentDrawStoreKey, bz)
-	return nil
+	store.Set(types.CurrentDrawStoreKey, types.MustMarshalDraw(k.cdc, draw))
 }
 
 // GetCurrentDraw returns the Draw for which the tickets can be currently bought

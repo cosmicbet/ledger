@@ -86,8 +86,8 @@ func (params Params) Validate() error {
 		return err
 	}
 
-	if params.PrizePercentage.Add(params.CommunityPoolPercentage).Add(params.BurnPercentage).GT(sdk.NewInt(100)) {
-		return fmt.Errorf("percentages sum exceed 100")
+	if !params.PrizePercentage.Add(params.CommunityPoolPercentage).Add(params.BurnPercentage).Equal(sdk.NewInt(100)) {
+		return fmt.Errorf("percentages does not sum to 100")
 	}
 
 	err = ValidateDurationValue(params.DrawDuration)
