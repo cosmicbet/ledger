@@ -67,7 +67,7 @@ func TestDecodeStore(t *testing.T) {
 		name        string
 		expectedLog string
 	}{
-		{"Draw", fmt.Sprintf("CurrentDrawA: %s\nCurrentDrawb: %s\n", &draw, &draw)},
+		{"Draw", fmt.Sprintf("CurrentDrawA: %s\nCurrentDrawB: %s\n", &draw, &draw)},
 		{"Ticket", fmt.Sprintf("TicketA: %s\nTicketB: %s\n", &ticket, &ticket)},
 		{"Historical draw", fmt.Sprintf("HistoricalDataA: %s\nHistoricalDataB: %s\n", &historicalDraw, &historicalDraw)},
 		{"other", ""},

@@ -358,7 +358,7 @@ build-docker-cosmicbetnode:
 # Run a 4-node testnet locally
 localnet-start: build-linux localnet-stop
 	$(if $(shell docker inspect -f '{{ .Id }}' cosmicbet/cosmicbet-env 2>/dev/null),$(info found image cosmicbet/cosmicbet-env),$(MAKE) -C contrib/images desmos-env)
-	if ! [ -f build/node0/desmos/config/genesis.json ]; then docker run --rm \
+	if ! [ -f build/node0/casino/config/genesis.json ]; then docker run --rm \
 		--user $(shell id -u):$(shell id -g) \
 		-v $(BUILDDIR):/desmos:Z \
 		-v /etc/group:/etc/group:ro \
