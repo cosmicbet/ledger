@@ -58,11 +58,11 @@ func RandomDraw(r *rand.Rand, limitTime time.Time) types.Draw {
 // -------------------------------------------------------------------------------------------------------------------
 
 // RandTicket generates a random ticket for the given address
-func RandTicket(r *rand.Rand, owner sdk.AccAddress) types.Ticket {
+func RandTicket(r *rand.Rand, owner string) types.Ticket {
 	return types.NewTicket(
 		RandHexString(r, 20),
 		RandDate(r, time.Now()),
-		owner.String(),
+		owner,
 	)
 }
 
@@ -71,7 +71,7 @@ func RandTicketsSlice(r *rand.Rand, length int, accounts []simtypes.Account) []t
 	tickets := make([]types.Ticket, length)
 	for i := range tickets {
 		owner := accounts[r.Intn(len(accounts))]
-		tickets[i] = RandTicket(r, owner.Address)
+		tickets[i] = RandTicket(r, owner.Address.String())
 	}
 	return tickets
 }
@@ -83,7 +83,7 @@ func RandHistoricalDrawData(r *rand.Rand, accounts []simtypes.Account) types.His
 	// 50% chance of not having any ticket
 	var winningTicket *types.Ticket
 	if r.Intn(100) > 50 {
-		randTicket := RandTicket(r, accounts[r.Intn(len(accounts))].Address)
+		randTicket := RandTicket(r, accounts[r.Intn(len(accounts))].Address.String())
 		winningTicket = &randTicket
 	}
 

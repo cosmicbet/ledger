@@ -115,8 +115,8 @@ func (k Keeper) WipeCurrentTickets(ctx sdk.Context) {
 func (k Keeper) UpdateDrawData(ctx sdk.Context, usersAmount, ticketsAmount uint32, amount sdk.Coin) {
 	draw := k.GetCurrentDraw(ctx)
 	draw.Prize = draw.Prize.Add(amount)
-	draw.Participants = draw.Participants + usersAmount
-	draw.TicketsSold = draw.TicketsSold + ticketsAmount
+	draw.Participants += usersAmount
+	draw.TicketsSold += ticketsAmount
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
