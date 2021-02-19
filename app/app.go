@@ -306,6 +306,7 @@ func New(
 		appCodec,
 		keys[wtatypes.StoreKey],
 		app.GetSubspace(wtatypes.ModuleName),
+		app.AccountKeeper,
 		app.BankKeeper,
 		app.DistrKeeper,
 	)

@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -17,6 +18,7 @@ type Keeper struct {
 	cdc           codec.BinaryMarshaler
 	paramSubspace paramstypes.Subspace
 
+	ak authkeeper.AccountKeeper
 	bk bankkeeper.Keeper
 	dk distrkeeper.Keeper
 }
@@ -24,7 +26,7 @@ type Keeper struct {
 // NewKeeper creates new instances of the wta Keeper
 func NewKeeper(
 	cdc codec.BinaryMarshaler, storeKey sdk.StoreKey, paramSpace paramstypes.Subspace,
-	bk bankkeeper.Keeper, dk distrkeeper.Keeper,
+	ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, dk distrkeeper.Keeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -35,6 +37,7 @@ func NewKeeper(
 		cdc:           cdc,
 		paramSubspace: paramSpace,
 
+		ak: ak,
 		bk: bk,
 		dk: dk,
 	}
