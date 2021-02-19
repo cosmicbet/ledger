@@ -11,5 +11,5 @@ The Winner-Takes-All module contains the following parameters:
 | PrizePercentage           | string (int)          | "98"                                       |
 | CommunityPoolPercentage   | string(int)           | "1"                                        |
 | BurnPercentage            | string (int)          | "1"                                        |
-| DrawDurationKey           | string (duration)     | "300s"                                     |
+| DrawDuration              | string (duration)     | "300s"                                     |
 | TicketPrice               | object (coin)         | {"denom":"stake","amount":"1000000"}       |

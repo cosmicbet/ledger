@@ -15,11 +15,11 @@ const (
 
 // Parameters store keys
 var (
-	PrizePercentageKey         = []byte("PrizePercentage")
-	CommunityPoolPercentageKey = []byte("CommunityPoolPercentage")
-	BurnPercentageKey          = []byte("BurnPercentage")
-	DrawDurationKey            = []byte("DrawDurationKey")
-	TicketPriceKey             = []byte("TicketPrice")
+	PrizePercentageParamKey         = []byte("PrizePercentage")
+	CommunityPoolPercentageParamKey = []byte("CommunityPoolPercentage")
+	BurnPercentageParamKey          = []byte("BurnPercentage")
+	DrawDurationParamKey            = []byte("DrawDuration")
+	TicketPriceParamKey             = []byte("TicketPrice")
 )
 
 // ParamKeyTable Key declaration for parameters
@@ -56,15 +56,15 @@ func DefaultParams() Params {
 // of posts module's parameters.
 func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(PrizePercentageKey,
+		paramstypes.NewParamSetPair(PrizePercentageParamKey,
 			&params.PrizePercentage, ValidatePercentageValue),
-		paramstypes.NewParamSetPair(CommunityPoolPercentageKey,
+		paramstypes.NewParamSetPair(CommunityPoolPercentageParamKey,
 			&params.CommunityPoolPercentage, ValidatePercentageValue),
-		paramstypes.NewParamSetPair(BurnPercentageKey,
+		paramstypes.NewParamSetPair(BurnPercentageParamKey,
 			&params.BurnPercentage, ValidatePercentageValue),
-		paramstypes.NewParamSetPair(DrawDurationKey,
+		paramstypes.NewParamSetPair(DrawDurationParamKey,
 			&params.DrawDuration, ValidateDurationValue),
-		paramstypes.NewParamSetPair(TicketPriceKey,
+		paramstypes.NewParamSetPair(TicketPriceParamKey,
 			&params.TicketPrice, ValidateTicketPriceValue),
 	}
 }
