@@ -2,14 +2,14 @@
 # > docker build -t casino .
 #
 # Simple usage with a mounted data directory:
-# > docker run -it -p 26657:26657 -p 26656:26656 -v ~/.casino:/root/.casino casino casinod init
-# > docker run -it -p 26657:26657 -p 26656:26656 -v ~/.casino:/root/.casino casino casinod start
+# > docker run -it -p 26657:26657 -p 26656:26656 -v ~/.casino:/root/.casino casino casino init
+# > docker run -it -p 26657:26657 -p 26656:26656 -v ~/.casino:/root/.casino casino casino start
 #
 # If you want to run this container as a daemon, you can do so by executing
 # > docker run -td -p 26657:26657 -p 26656:26656 -v ~/.casino:/root/.casino --name casino casino
 #
 # Once you have done so, you can enter the container shell by executing
-# > docker exec -it desmos bash
+# > docker exec -it casino bash
 #
 # To exit the bash, just execute
 # > exit
@@ -25,7 +25,7 @@ WORKDIR /go/src/github.com/cosmicbet/ledger
 # Add source files
 COPY . .
 
-# Install casinod, remove packages
+# Install casino, remove packages
 RUN make build-linux
 
 
@@ -40,9 +40,9 @@ WORKDIR /root
 RUN apk add --no-cache bash
 
 # Copy over binaries from the build-env
-COPY --from=build-env /go/src/github.com/cosmicbet/ledger/build/casinod /usr/bin/casinod
+COPY --from=build-env /go/src/github.com/cosmicbet/ledger/build/casino /usr/bin/casino
 
 EXPOSE 26656 26657 1317 9090
 
-# Run desmos by default, omit entrypoint to ease using container with desmos
-CMD ["casinod"]
+# Run casino by default, omit entrypoint to ease using container with casino
+CMD ["casino"]

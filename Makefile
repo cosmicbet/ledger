@@ -50,7 +50,7 @@ build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 # Process linker flags
 ldflags = -X 'github.com/cosmos/cosmos-sdk/version.Name=CosmicCasino' \
- 	-X 'github.com/cosmos/cosmos-sdk/version.AppName=casinod' \
+ 	-X 'github.com/cosmos/cosmos-sdk/version.AppName=casino' \
  	-X 'github.com/cosmos/cosmos-sdk/version.Version=$(VERSION)' \
     -X 'github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT)' \
   	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
@@ -179,8 +179,8 @@ test-sim-nondeterminism:
 
 test-sim-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
-	@echo "By default, ${HOME}/.casinod/config/genesis.json will be used."
-	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=${HOME}/.casinod/config/genesis.json \
+	@echo "By default, ${HOME}/.casino/config/genesis.json will be used."
+	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=${HOME}/.casino/config/genesis.json \
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 test-sim-import-export: runsim
@@ -193,8 +193,8 @@ test-sim-after-import: runsim
 
 test-sim-custom-genesis-multi-seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."
-	@echo "By default, ${HOME}/.casinod/config/genesis.json will be used."
-	@$(BINDIR)/runsim -Genesis=${HOME}/.casinod/config/genesis.json -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
+	@echo "By default, ${HOME}/.casino/config/genesis.json will be used."
+	@$(BINDIR)/runsim -Genesis=${HOME}/.casino/config/genesis.json -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
 
 test-sim-multi-seed-long: runsim
 	@echo "Running long multi-seed application simulation. This may take awhile!"
@@ -357,14 +357,14 @@ build-docker-cosmicbetnode:
 
 # Run a 4-node testnet locally
 localnet-start: build-linux localnet-stop
-	$(if $(shell docker inspect -f '{{ .Id }}' cosmicbet/cosmicbet-env 2>/dev/null),$(info found image cosmicbet/cosmicbet-env),$(MAKE) -C contrib/images desmos-env)
+	$(if $(shell docker inspect -f '{{ .Id }}' cosmicbet/casino-env 2>/dev/null),$(info found image cosmicbet/casino-env),$(MAKE) -C contrib/images casino-env)
 	if ! [ -f build/node0/casino/config/genesis.json ]; then docker run --rm \
 		--user $(shell id -u):$(shell id -g) \
-		-v $(BUILDDIR):/desmos:Z \
+		-v $(BUILDDIR):/casino:Z \
 		-v /etc/group:/etc/group:ro \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/shadow:/etc/shadow:ro \
-		cosmicbet/cosmicbet-env testnet --v 4 -o . --starting-ip-address 192.168.10.2 --keyring-backend=test ; fi
+		cosmicbet/casino-env testnet --v 4 -o . --starting-ip-address 192.168.10.2 --keyring-backend=test ; fi
 	docker-compose up -d
 
 # Stop testnet

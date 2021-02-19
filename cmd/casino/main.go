@@ -6,7 +6,7 @@ import (
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
 	"github.com/cosmicbet/ledger/app"
-	"github.com/cosmicbet/ledger/cmd/casinod/cmd"
+	"github.com/cosmicbet/ledger/cmd/casino/cmd"
 )
 
 func main() {
