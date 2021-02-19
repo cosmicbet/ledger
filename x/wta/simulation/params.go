@@ -1,10 +1,14 @@
 package simulation
 
+// DONTCOVER
+
 import (
-	"github.com/cosmicbet/ledger/x/wta/types"
+	"math/rand"
+
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"math/rand"
+
+	"github.com/cosmicbet/ledger/x/wta/types"
 )
 
 // ParamChanges returns a randomly generated set or parameter changes

@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/cosmicbet/ledger/x/wta/simulation"
 	"math/rand"
+
+	"github.com/cosmicbet/ledger/x/wta/simulation"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -194,7 +195,7 @@ func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
 
 // RegisterStoreDecoder performs a no-op.
 func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	// sdr[types.ModuleName] = simulation.NewDecodeStore(am.cdc)
+	sdr[types.ModuleName] = simulation.NewDecodeStore(am.cdc)
 }
 
 // WeightedOperations returns the all the wta module operations with their respective weights.

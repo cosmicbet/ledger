@@ -1,11 +1,15 @@
 package simulation
 
+// DONTCOVER
+
 import (
-	"github.com/cosmicbet/ledger/x/wta/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"math/rand"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	"github.com/cosmicbet/ledger/x/wta/types"
 )
 
 var (

@@ -3,11 +3,12 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	wtatypes "github.com/cosmicbet/ledger/x/wta/types"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"testing"
+
+	wtatypes "github.com/cosmicbet/ledger/x/wta/types"
 
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"

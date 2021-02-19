@@ -20,9 +20,9 @@ const (
 )
 
 var (
-	CurrentDrawStoreKey     = []byte{0x1}
-	HistoricalDrawsStoreKey = []byte("historical_draw")
-	TicketsStorePrefix      = []byte("wta_tickets")
+	CurrentDrawStoreKey       = []byte{0x1}
+	HistoricalDrawStorePrefix = []byte("historical_draw")
+	TicketsStorePrefix        = []byte("wta_tickets")
 )
 
 // TicketsStoreKey returns the store key used to save the ticket with the given id
@@ -32,5 +32,5 @@ func TicketsStoreKey(id string) []byte {
 
 // HistoricalDataStoreKey returns the store key used to save a historical data entry with the given timestamp
 func HistoricalDataStoreKey(timestamp time.Time) []byte {
-	return append(HistoricalDrawsStoreKey, []byte(timestamp.Format(time.RFC3339))...)
+	return append(HistoricalDrawStorePrefix, []byte(timestamp.Format(time.RFC3339))...)
 }

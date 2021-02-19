@@ -39,7 +39,7 @@ func (k Keeper) GetTickets(ctx sdk.Context) []types.Ticket {
 func (k Keeper) IterateHistoricalDrawsData(ctx sdk.Context, fn func(index int64, data types.HistoricalDrawData) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStoreReversePrefixIterator(store, types.HistoricalDrawsStoreKey)
+	iterator := sdk.KVStoreReversePrefixIterator(store, types.HistoricalDrawStorePrefix)
 	defer iterator.Close()
 
 	i := int64(0)

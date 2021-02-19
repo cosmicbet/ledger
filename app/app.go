@@ -1,10 +1,11 @@
 package app
 
 import (
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 
 	wtakeeper "github.com/cosmicbet/ledger/x/wta/keeper"
 

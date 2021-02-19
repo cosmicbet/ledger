@@ -1,13 +1,17 @@
 package simulation
 
+// DONTCOVER
+
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cosmicbet/ledger/x/wta/types"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"time"
+
+	"github.com/cosmicbet/ledger/x/wta/types"
 )
 
 // RandomizedGenState sets into the given simState a randomly generated genesis state

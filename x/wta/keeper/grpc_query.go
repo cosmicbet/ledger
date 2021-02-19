@@ -67,7 +67,7 @@ func (k querier) PastDraws(ctx context.Context, req *types.QueryPastDrawsRequest
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	store := sdkCtx.KVStore(k.storeKey)
-	drawsStore := prefix.NewStore(store, types.HistoricalDrawsStoreKey)
+	drawsStore := prefix.NewStore(store, types.HistoricalDrawStorePrefix)
 
 	var draws types.HistoricalDrawsData
 	pageRes, err := query.FilteredPaginate(drawsStore, req.Pagination, func(_ []byte, value []byte, accumulate bool) (bool, error) {
