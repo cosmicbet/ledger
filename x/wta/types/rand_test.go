@@ -1,11 +1,13 @@
 package types_test
 
 import (
-	"github.com/cosmicbet/ledger/x/wta/types"
+	"testing"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"testing"
+
+	"github.com/cosmicbet/ledger/x/wta/types"
 )
 
 func TestNewRandFromSeed(t *testing.T) {

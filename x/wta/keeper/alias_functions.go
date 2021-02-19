@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/cosmicbet/ledger/x/wta/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/cosmicbet/ledger/x/wta/types"
 )
 
 // IterateTickets iterates through the tickets and performs the provided function

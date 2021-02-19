@@ -112,7 +112,7 @@ func (d Draw) Validate() error {
 // Equal tells whether d and e contain the same data
 func (d Draw) Equal(e Draw) bool {
 	return d.Participants == e.Participants &&
-		d.TicketsSold == d.TicketsSold &&
+		d.TicketsSold == e.TicketsSold &&
 		d.Prize.IsEqual(e.Prize) &&
 		d.EndTime.Equal(e.EndTime)
 }
