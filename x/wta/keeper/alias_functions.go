@@ -1,12 +1,11 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/cosmicbet/ledger/x/wta/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// Iterate through the tickets and perform the provided function
+// IterateTickets iterates through the tickets and performs the provided function
 func (k Keeper) IterateTickets(ctx sdk.Context, fn func(index int64, ticket types.Ticket) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 
@@ -28,9 +27,38 @@ func (k Keeper) IterateTickets(ctx sdk.Context, fn func(index int64, ticket type
 // GetTickets returns the list of tickets currently stored
 func (k Keeper) GetTickets(ctx sdk.Context) []types.Ticket {
 	var tickets []types.Ticket
-	k.IterateTickets(ctx, func(index int64, ticket types.Ticket) (stop bool) {
+	k.IterateTickets(ctx, func(_ int64, ticket types.Ticket) (stop bool) {
 		tickets = append(tickets, ticket)
 		return false
 	})
 	return tickets
+}
+
+// IterateHistoricalDrawsData iterates through the historical data and performs the provided function
+func (k Keeper) IterateHistoricalDrawsData(ctx sdk.Context, fn func(index int64, data types.HistoricalDrawData) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+
+	iterator := sdk.KVStoreReversePrefixIterator(store, types.HistoricalDrawsStoreKey)
+	defer iterator.Close()
+
+	i := int64(0)
+	for ; iterator.Valid(); iterator.Next() {
+		historicalDraw := types.MustUnmarshalHistoricalDrawData(k.cdc, iterator.Value())
+
+		stop := fn(i, historicalDraw)
+		if stop {
+			break
+		}
+		i++
+	}
+}
+
+// GetHistoricalDrawsData returns the list of historical draws data currently stored
+func (k Keeper) GetHistoricalDrawsData(ctx sdk.Context) []types.HistoricalDrawData {
+	var historicalDraws []types.HistoricalDrawData
+	k.IterateHistoricalDrawsData(ctx, func(_ int64, data types.HistoricalDrawData) (stop bool) {
+		historicalDraws = append(historicalDraws, data)
+		return false
+	})
+	return historicalDraws
 }

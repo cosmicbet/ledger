@@ -23,8 +23,8 @@ func (t *Ticket) Validate() error {
 		return fmt.Errorf("invalid ticket id: %s", t.Id)
 	}
 
-	if t.Timestamp.After(time.Now()) {
-		return fmt.Errorf("ticket creation time cannot be in the future: %s", t.Timestamp.Format(time.RFC3339))
+	if t.Timestamp.IsZero() {
+		return fmt.Errorf("invalid ticket creation time: %s", t.Timestamp.Format(time.RFC3339))
 	}
 
 	if t.Owner == "" {
@@ -78,10 +78,20 @@ func IsTicketIDDuplicated(id string, slice []Ticket) bool {
 
 // ------------------------------------------------------------------------------------------------------------------
 
-func NewDraw(prize sdk.Coins, endTime time.Time) Draw {
+// EmptyDraw returns a new Draw that will end on the given time
+func EmptyDraw(endTime time.Time) Draw {
 	return Draw{
-		Prize:   prize,
 		EndTime: endTime,
+	}
+}
+
+// NewDraw allows to build a new Draw instance
+func NewDraw(participants, ticketsSold uint32, prize sdk.Coins, endTime time.Time) Draw {
+	return Draw{
+		Participants: participants,
+		TicketsSold:  ticketsSold,
+		Prize:        prize,
+		EndTime:      endTime,
 	}
 }
 
@@ -101,7 +111,9 @@ func (d Draw) Validate() error {
 
 // Equal tells whether d and e contain the same data
 func (d Draw) Equal(e Draw) bool {
-	return d.Prize.IsEqual(e.Prize) &&
+	return d.Participants == e.Participants &&
+		d.TicketsSold == d.TicketsSold &&
+		d.Prize.IsEqual(e.Prize) &&
 		d.EndTime.Equal(e.EndTime)
 }
 
@@ -146,6 +158,22 @@ func NewHistoricalDrawData(draw Draw, winningTicket *Ticket) HistoricalDrawData 
 	}
 }
 
+func (h *HistoricalDrawData) Validate() error {
+	err := h.Draw.Validate()
+	if err != nil {
+		return err
+	}
+
+	if h.WinningTicket != nil {
+		err = h.WinningTicket.Validate()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // MarshalHistoricalDraw marshals the given historical draw as a byte array
 func MarshalHistoricalDraw(cdc codec.BinaryMarshaler, draw HistoricalDrawData) ([]byte, error) {
 	return cdc.MarshalBinaryBare(&draw)
@@ -170,4 +198,13 @@ func UnmarshalHistoricalDraw(cdc codec.BinaryMarshaler, bz []byte) (HistoricalDr
 	}
 
 	return draws, nil
+}
+
+// MustUnmarshalHistoricalDrawData unmarshals the given byte array as a HistoricalDrawData object and panics on errors
+func MustUnmarshalHistoricalDrawData(cdc codec.BinaryMarshaler, bz []byte) HistoricalDrawData {
+	data, err := UnmarshalHistoricalDraw(cdc, bz)
+	if err != nil {
+		panic(err)
+	}
+	return data
 }

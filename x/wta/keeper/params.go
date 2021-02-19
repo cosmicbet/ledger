@@ -12,7 +12,8 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 }
 
 // GetParams returns the params from the store
-func (k Keeper) GetParams(ctx sdk.Context) (p types.Params) {
+func (k Keeper) GetParams(ctx sdk.Context) types.Params {
+	var p types.Params
 	k.paramSubspace.GetParamSet(ctx, &p)
 	return p
 }

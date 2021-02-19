@@ -40,12 +40,12 @@ func NewBuyTicketsCmd() *cobra.Command {
 				return err
 			}
 
-			quantity, err := strconv.Atoi(args[0])
+			quantity, err := strconv.ParseUint(args[0], 10, 32)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgBuyTickets(int32(quantity), clientCtx.GetFromAddress().String())
+			msg := types.NewMsgBuyTickets(uint32(quantity), clientCtx.GetFromAddress().String())
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

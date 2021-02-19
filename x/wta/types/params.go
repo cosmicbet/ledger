@@ -95,9 +95,15 @@ func (params Params) Validate() error {
 		return err
 	}
 
+	err = ValidateTicketPriceValue(params.TicketPrice)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
+// ValidatePercentageValue validates a percentage value making sure it's not negative or exceeding 100
 func ValidatePercentageValue(i interface{}) error {
 	params, isCorrectParam := i.(sdk.Int)
 
@@ -112,6 +118,7 @@ func ValidatePercentageValue(i interface{}) error {
 	return nil
 }
 
+// ValidateDurationValue validates a duration value making sure it's not zero
 func ValidateDurationValue(i interface{}) error {
 	params, isCorrectParam := i.(time.Duration)
 
@@ -126,6 +133,7 @@ func ValidateDurationValue(i interface{}) error {
 	return nil
 }
 
+// ValidateTicketPriceValue validates a ticket price value
 func ValidateTicketPriceValue(i interface{}) error {
 	params, isCorrectParam := i.(sdk.Coin)
 

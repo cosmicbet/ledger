@@ -21,6 +21,7 @@ service Query {
     option (google.api.http).get = "/cosmicbet/wta/v1beta1/next-draw";
   }
 
+  // PastDraws queries the past draws that have already been drawn
   rpc PastDraws(QueryPastDrawsRequest) returns (QueryPastDrawsResponse) {
     option (google.api.http).get = "/cosmicbet/wta/v1beta1/past-draws";
   }
@@ -41,7 +42,7 @@ message QueryTicketsRequest {
 
 // QueryTicketsResponse is the response type for the Query/Tickets RPC method
 message QueryTicketsResponse {
-  cosmicbet.wta.v1beta1.Tickets tickets = 1 [(gogoproto.nullable) = false];
+  cosmicbet.wta.v1beta1.Tickets tickets = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -52,7 +53,7 @@ message QueryNextDrawRequest {}
 
 // QueryDrawResponse is the response type for the Query/Draw RPC method
 message QueryNextDrawResponse {
-  cosmicbet.wta.v1beta1.Draw draw = 1 [(gogoproto.nullable) = false];
+  cosmicbet.wta.v1beta1.Draw draw = 1 [ (gogoproto.nullable) = false ];
 }
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -63,9 +64,11 @@ message QueryPastDrawsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-// QueryPastDrawsResponse is the response type for the Query/PastDraws RPC method
+// QueryPastDrawsResponse is the response type for the Query/PastDraws RPC
+// method
 message QueryPastDrawsResponse {
-  cosmicbet.wta.v1beta1.HistoricalDrawsData draws = 1 [(gogoproto.nullable) = false];
+  cosmicbet.wta.v1beta1.HistoricalDrawsData draws = 1
+      [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -76,5 +79,5 @@ message QueryParamsRequest {}
 
 // QueryParamsResponse is the response type for the Query/Params RPC method
 message QueryParamsResponse {
-  cosmicbet.wta.v1beta1.Params params = 1 [(gogoproto.nullable) = false];
+  cosmicbet.wta.v1beta1.Params params = 1 [ (gogoproto.nullable) = false ];
 }

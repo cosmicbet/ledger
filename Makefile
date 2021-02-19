@@ -49,7 +49,7 @@ comma := ,
 build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 # Process linker flags
-ldflags = -X 'github.com/cosmos/cosmos-sdk/version.Name=CosmicBet' \
+ldflags = -X 'github.com/cosmos/cosmos-sdk/version.Name=CosmicCasino' \
  	-X 'github.com/cosmos/cosmos-sdk/version.AppName=casinod' \
  	-X 'github.com/cosmos/cosmos-sdk/version.Version=$(VERSION)' \
     -X 'github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT)' \

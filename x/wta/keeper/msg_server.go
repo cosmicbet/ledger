@@ -22,7 +22,7 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 }
 
 // generateTickets generates n random tickets for the given user
-func (k msgServer) generateTickets(ctx sdk.Context, n int32, user sdk.AccAddress) []types.Ticket {
+func (k msgServer) generateTickets(ctx sdk.Context, n uint32, user sdk.AccAddress) []types.Ticket {
 	tickets := make([]types.Ticket, n)
 	for i := range tickets {
 		r := types.NewRandFromCtxAndIndex(ctx, i)

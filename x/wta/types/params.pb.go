@@ -29,12 +29,21 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Params contains the module parameters
 type Params struct {
-	PrizePercentage         github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=prize_percentage,json=prizePercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"prize_percentage"`
+	// Percentage of the ticket cost that should be sent to the prize pool (out of
+	// 100)
+	PrizePercentage github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=prize_percentage,json=prizePercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"prize_percentage"`
+	// Percentage of the ticket cost that should be sent to the community pool
+	// (out of 100)
 	CommunityPoolPercentage github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=community_pool_percentage,json=communityPoolPercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"community_pool_percentage"`
-	BurnPercentage          github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=burn_percentage,json=burnPercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"burn_percentage"`
-	DrawDuration            time.Duration                          `protobuf:"bytes,4,opt,name=draw_duration,json=drawDuration,proto3,stdduration" json:"draw_duration"`
-	TicketPrice             types.Coin                             `protobuf:"bytes,5,opt,name=ticket_price,json=ticketPrice,proto3" json:"ticket_price"`
+	// Percentage of the ticket cost that should be burnt (out of 100)
+	BurnPercentage github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=burn_percentage,json=burnPercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"burn_percentage"`
+	// Duration of each draw, after which the winner is picked and a new draw is
+	// created
+	DrawDuration time.Duration `protobuf:"bytes,4,opt,name=draw_duration,json=drawDuration,proto3,stdduration" json:"draw_duration"`
+	// Cost of an individual ticket
+	TicketPrice types.Coin `protobuf:"bytes,5,opt,name=ticket_price,json=ticketPrice,proto3" json:"ticket_price"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }

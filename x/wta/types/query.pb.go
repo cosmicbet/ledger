@@ -257,7 +257,8 @@ func (m *QueryPastDrawsRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryPastDrawsResponse is the response type for the Query/PastDraws RPC method
+// QueryPastDrawsResponse is the response type for the Query/PastDraws RPC
+// method
 type QueryPastDrawsResponse struct {
 	Draws      HistoricalDrawsData `protobuf:"bytes,1,opt,name=draws,proto3" json:"draws"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -461,6 +462,7 @@ type QueryClient interface {
 	Tickets(ctx context.Context, in *QueryTicketsRequest, opts ...grpc.CallOption) (*QueryTicketsResponse, error)
 	// NextDraw queries the next planned drawn
 	NextDraw(ctx context.Context, in *QueryNextDrawRequest, opts ...grpc.CallOption) (*QueryNextDrawResponse, error)
+	// PastDraws queries the past draws that have already been drawn
 	PastDraws(ctx context.Context, in *QueryPastDrawsRequest, opts ...grpc.CallOption) (*QueryPastDrawsResponse, error)
 	// Params queries the wta parameters
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
@@ -516,6 +518,7 @@ type QueryServer interface {
 	Tickets(context.Context, *QueryTicketsRequest) (*QueryTicketsResponse, error)
 	// NextDraw queries the next planned drawn
 	NextDraw(context.Context, *QueryNextDrawRequest) (*QueryNextDrawResponse, error)
+	// PastDraws queries the past draws that have already been drawn
 	PastDraws(context.Context, *QueryPastDrawsRequest) (*QueryPastDrawsResponse, error)
 	// Params queries the wta parameters
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)

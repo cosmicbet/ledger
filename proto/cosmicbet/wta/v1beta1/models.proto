@@ -25,21 +25,23 @@ message Tickets {
 
 // Draw contains the data of the next planned draw
 message Draw {
-  repeated cosmos.base.v1beta1.Coin prize = 1 [
+  uint32 participants = 1;
+  uint32 tickets_sold = 2;
+  repeated cosmos.base.v1beta1.Coin prize = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  google.protobuf.Timestamp end_time = 2
+  google.protobuf.Timestamp end_time = 4
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }
 
 // HistoricalDrawData contains the data of a past draw and its winner
 message HistoricalDrawData {
-  Draw draw = 1 [(gogoproto.nullable) = false];
+  Draw draw = 1 [ (gogoproto.nullable) = false ];
   Ticket winning_ticket = 2;
 }
 
 // HistoricalDrawsData represents a slice of past draws data
 message HistoricalDrawsData {
-  repeated HistoricalDrawData draws = 1 [(gogoproto.nullable) = false];
+  repeated HistoricalDrawData draws = 1 [ (gogoproto.nullable) = false ];
 }

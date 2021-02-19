@@ -12,7 +12,7 @@ const (
 var _ sdk.Msg = &MsgBuyTickets{}
 
 // NewMsgBuyTickets allows to build a new MsgBuyTickets instance
-func NewMsgBuyTickets(quantity int32, user string) *MsgBuyTickets {
+func NewMsgBuyTickets(quantity uint32, user string) *MsgBuyTickets {
 	return &MsgBuyTickets{
 		Quantity: quantity,
 		Buyer:    user,
@@ -20,17 +20,17 @@ func NewMsgBuyTickets(quantity int32, user string) *MsgBuyTickets {
 }
 
 // Route implements sdk.Msg
-func (msg MsgBuyTickets) Route() string {
+func (msg *MsgBuyTickets) Route() string {
 	return RouterKey
 }
 
 // Type implements sdk.Msg
-func (msg MsgBuyTickets) Type() string {
+func (msg *MsgBuyTickets) Type() string {
 	return TypeMsgBuyTickets
 }
 
 // ValidateBasic implements sdk.Msg
-func (msg MsgBuyTickets) ValidateBasic() error {
+func (msg *MsgBuyTickets) ValidateBasic() error {
 	if msg.Quantity <= 0 {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid tickets quantity: %d", msg.Quantity)
 	}
@@ -43,13 +43,13 @@ func (msg MsgBuyTickets) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (msg MsgBuyTickets) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(&msg)
+func (msg *MsgBuyTickets) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
-func (msg MsgBuyTickets) GetSigners() []sdk.AccAddress {
+func (msg *MsgBuyTickets) GetSigners() []sdk.AccAddress {
 	buyerAddr, err := sdk.AccAddressFromBech32(msg.Buyer)
 	if err != nil {
 		panic(err)

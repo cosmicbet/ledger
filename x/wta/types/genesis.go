@@ -3,24 +3,24 @@ package types
 import (
 	"fmt"
 	"time"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // NewGenesisState returns a new GenesisState containing the provided data
-func NewGenesisState(draw Draw, tickets []Ticket, params Params) *GenesisState {
+func NewGenesisState(draw Draw, tickets []Ticket, pastDraws []HistoricalDrawData, params Params) *GenesisState {
 	return &GenesisState{
-		Draw:    draw,
-		Tickets: tickets,
-		Params:  params,
+		Draw:      draw,
+		Tickets:   tickets,
+		PastDraws: pastDraws,
+		Params:    params,
 	}
 }
 
 // DefaultGenesisState returns a default GenesisState
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
-		NewDraw(sdk.NewCoins(), time.Now().Add(time.Hour*24)),
+		EmptyDraw(time.Now().Add(time.Hour*24)),
 		[]Ticket{},
+		[]HistoricalDrawData{},
 		DefaultParams(),
 	)
 }
@@ -42,10 +42,29 @@ func ValidateGenesis(state *GenesisState) error {
 			return err
 		}
 
+		// Check that the timestamp is not in the future
+		if t.Timestamp.After(time.Now()) {
+			return fmt.Errorf("ticket creation date cannot be in the future: %s", t.Timestamp.Format(time.RFC3339))
+		}
+
 		// Check id duplicates
 		if IsTicketIDDuplicated(t.Id, state.Tickets) {
 			return fmt.Errorf("ticket id duplicated: %s", t.Id)
 		}
+	}
+
+	// Validate the historical draws data
+	for _, data := range state.PastDraws {
+		err := data.Validate()
+		if err != nil {
+			return err
+		}
+	}
+
+	// Validate the params
+	err := state.Params.Validate()
+	if err != nil {
+		return err
 	}
 
 	return nil

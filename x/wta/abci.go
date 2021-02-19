@@ -57,7 +57,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	// Create a new draw
 	endTime := ctx.BlockTime().Add(k.GetParams(ctx).DrawDuration)
-	newDraw := types.NewDraw(sdk.NewCoins(), endTime)
+	newDraw := types.EmptyDraw(endTime)
 	k.SaveCurrentDraw(ctx, newDraw)
 
 	ctx.EventManager().EmitEvent(

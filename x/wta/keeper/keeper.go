@@ -43,7 +43,7 @@ func NewKeeper(
 // ------------------------------------------------------------------------------------------------------------------
 
 // WithdrawTicketsCost allows the provided buyer to buy the given quantity of tickets.
-func (k Keeper) WithdrawTicketsCost(ctx sdk.Context, quantity int32, buyer sdk.AccAddress) error {
+func (k Keeper) WithdrawTicketsCost(ctx sdk.Context, quantity uint32, buyer sdk.AccAddress) error {
 	// Check tickets quantity
 	if quantity <= 0 {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid amount of tickets: %d", quantity)
@@ -68,7 +68,7 @@ func (k Keeper) WithdrawTicketsCost(ctx sdk.Context, quantity int32, buyer sdk.A
 		return err
 	}
 
-	k.IncrementDrawPrize(ctx, prizeAmount)
+	k.UpdateDrawData(ctx, 1, quantity, prizeAmount)
 
 	// Send the pool amount to the pool
 	poolAmount := sdk.NewCoin(ticketsTotal.Denom, ticketsTotal.Amount.Mul(params.CommunityPoolPercentage).QuoRaw(100))
@@ -108,10 +108,12 @@ func (k Keeper) WipeCurrentTickets(ctx sdk.Context) {
 
 // ------------------------------------------------------------------------------------------------------------------
 
-// IncrementDrawPrize increments the current draw prize to the provided amount
-func (k Keeper) IncrementDrawPrize(ctx sdk.Context, amount sdk.Coin) {
+// UpdateDrawData increments the current draw prize to the provided amount
+func (k Keeper) UpdateDrawData(ctx sdk.Context, usersAmount, ticketsAmount uint32, amount sdk.Coin) {
 	draw := k.GetCurrentDraw(ctx)
 	draw.Prize = draw.Prize.Add(amount)
+	draw.Participants = draw.Participants + usersAmount
+	draw.TicketsSold = draw.TicketsSold + ticketsAmount
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

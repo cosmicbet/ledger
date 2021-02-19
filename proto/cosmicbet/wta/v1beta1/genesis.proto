@@ -9,8 +9,10 @@ import "cosmicbet/wta/v1beta1/params.proto";
 
 // GenesisState contains the data of the genesis state for the wda module
 message GenesisState {
-  cosmicbet.wta.v1beta1.Draw draw = 1 [(gogoproto.nullable) = false];
+  cosmicbet.wta.v1beta1.Draw draw = 1 [ (gogoproto.nullable) = false ];
   repeated cosmicbet.wta.v1beta1.Ticket tickets = 2
-  [(gogoproto.nullable) = false];
-  cosmicbet.wta.v1beta1.Params params = 3 [(gogoproto.nullable) = false];
+  [ (gogoproto.nullable) = false ];
+  repeated cosmicbet.wta.v1beta1.HistoricalDrawData past_draws = 3
+  [ (gogoproto.nullable) = false ];
+  cosmicbet.wta.v1beta1.Params params = 4 [ (gogoproto.nullable) = false ];
 }

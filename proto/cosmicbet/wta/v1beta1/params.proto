@@ -9,13 +9,15 @@ import "cosmos/base/v1beta1/coin.proto";
 
 // Params contains the module parameters
 message Params {
-  // Percentage of the ticket cost that should be sent to the prize pool (out of 100)
+  // Percentage of the ticket cost that should be sent to the prize pool (out of
+  // 100)
   string prize_percentage = 1 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false
   ];
 
-  // Percentage of the ticket cost that should be sent to the community pool (out of 100)
+  // Percentage of the ticket cost that should be sent to the community pool
+  // (out of 100)
   string community_pool_percentage = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false
@@ -27,14 +29,11 @@ message Params {
     (gogoproto.nullable) = false
   ];
 
-  // Duration of each draw, after which the winner is picked and a new draw is created
-  google.protobuf.Duration draw_duration = 4[
-    (gogoproto.nullable) = false,
-    (gogoproto.stdduration) = true
-  ];
+  // Duration of each draw, after which the winner is picked and a new draw is
+  // created
+  google.protobuf.Duration draw_duration = 4
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
 
   // Cost of an individual ticket
-  cosmos.base.v1beta1.Coin ticket_price = 5 [
-    (gogoproto.nullable) = false
-  ];
+  cosmos.base.v1beta1.Coin ticket_price = 5 [ (gogoproto.nullable) = false ];
 }
