@@ -56,16 +56,11 @@ func DefaultParams() Params {
 // of posts module's parameters.
 func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(PrizePercentageParamKey,
-			&params.PrizePercentage, ValidatePercentageValue),
-		paramstypes.NewParamSetPair(CommunityPoolPercentageParamKey,
-			&params.CommunityPoolPercentage, ValidatePercentageValue),
-		paramstypes.NewParamSetPair(BurnPercentageParamKey,
-			&params.BurnPercentage, ValidatePercentageValue),
-		paramstypes.NewParamSetPair(DrawDurationParamKey,
-			&params.DrawDuration, ValidateDurationValue),
-		paramstypes.NewParamSetPair(TicketPriceParamKey,
-			&params.TicketPrice, ValidateTicketPriceValue),
+		paramstypes.NewParamSetPair(PrizePercentageParamKey, &params.PrizePercentage, ValidatePercentageValue),
+		paramstypes.NewParamSetPair(CommunityPoolPercentageParamKey, &params.CommunityPoolPercentage, ValidatePercentageValue),
+		paramstypes.NewParamSetPair(BurnPercentageParamKey, &params.BurnPercentage, ValidatePercentageValue),
+		paramstypes.NewParamSetPair(DrawDurationParamKey, &params.DrawDuration, ValidateDurationValue),
+		paramstypes.NewParamSetPair(TicketPriceParamKey, &params.TicketPrice, ValidateTicketPriceValue),
 	}
 }
 

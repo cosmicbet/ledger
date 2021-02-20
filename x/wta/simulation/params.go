@@ -3,6 +3,8 @@ package simulation
 // DONTCOVER
 
 import (
+	"encoding/json"
+	"fmt"
 	"math/rand"
 
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -18,27 +20,31 @@ func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 	return []simtypes.ParamChange{
 		simulation.NewSimParamChange(types.ModuleName, string(types.PrizePercentageParamKey),
 			func(r *rand.Rand) string {
-				return params.PrizePercentage.String()
+				return fmt.Sprintf(`"%s"`, params.PrizePercentage)
 			},
 		),
 		simulation.NewSimParamChange(types.ModuleName, string(types.CommunityPoolPercentageParamKey),
 			func(r *rand.Rand) string {
-				return params.CommunityPoolPercentage.String()
+				return fmt.Sprintf(`"%s"`, params.CommunityPoolPercentage)
 			},
 		),
 		simulation.NewSimParamChange(types.ModuleName, string(types.BurnPercentageParamKey),
 			func(r *rand.Rand) string {
-				return params.BurnPercentage.String()
+				return fmt.Sprintf(`"%s"`, params.BurnPercentage)
 			},
 		),
 		simulation.NewSimParamChange(types.ModuleName, string(types.DrawDurationParamKey),
 			func(r *rand.Rand) string {
-				return params.DrawDuration.String()
+				return fmt.Sprintf(`"%d"`, params.DrawDuration)
 			},
 		),
 		simulation.NewSimParamChange(types.ModuleName, string(types.TicketPriceParamKey),
 			func(r *rand.Rand) string {
-				return params.TicketPrice.String()
+				bz, err := json.Marshal(params.TicketPrice)
+				if err != nil {
+					panic(err)
+				}
+				return string(bz)
 			},
 		),
 	}

@@ -18,16 +18,7 @@ var (
 
 // RandDate generates a new Date that does not exceed the one set
 func RandDate(r *rand.Rand, max time.Time) time.Time {
-	return time.Date(
-		r.Intn(max.Year()),
-		time.Month(r.Intn(int(max.Month()))),
-		r.Intn(max.Day()),
-		r.Intn(max.Hour()),
-		r.Intn(max.Minute()),
-		r.Intn(max.Second()),
-		r.Intn(max.Nanosecond()),
-		max.Location(),
-	)
+	return time.Unix(r.Int63n(max.Unix()), 0)
 }
 
 // RandHexString generates a random hex string of given length
