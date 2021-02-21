@@ -97,15 +97,15 @@ func RandHistoricalDrawsData(r *rand.Rand, length int, accounts []simtypes.Accou
 
 // RandomParams returns a randomly generated parameters
 func RandomParams(r *rand.Rand) types.Params {
-	prizePercentage := r.Int63n(100)
-	poolPercentage := r.Int63n(100 - prizePercentage)
+	prizePercentage := r.Int63n(100) + 1                // Minimum 1%
+	poolPercentage := r.Int63n(100-prizePercentage) + 1 // Minimum 1%
 	burnPercentage := (100 - prizePercentage) - poolPercentage
 
 	return types.NewParams(
 		sdk.NewInt(prizePercentage),
 		sdk.NewInt(poolPercentage),
 		sdk.NewInt(burnPercentage),
-		time.Second*time.Duration(r.Int63n(60)),
+		time.Second*time.Duration(r.Int63n(60)+30), // Minimum 30 seconds
 		RandCoint(r, 1000),
 	)
 }
