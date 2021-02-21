@@ -42,9 +42,14 @@ func ValidateGenesis(state *GenesisState) error {
 			return err
 		}
 
+		// Check that the timestamp is not after the current draw
+		if t.Timestamp.After(state.Draw.EndTime) {
+			return fmt.Errorf("ticket with id %s has creation date after the draw end time ", t.Id)
+		}
+
 		// Check that the timestamp is not in the future
 		if t.Timestamp.After(time.Now()) {
-			return fmt.Errorf("ticket creation date cannot be in the future: %s", t.Timestamp.Format(time.RFC3339))
+			return fmt.Errorf("ticket with id %s has creation date set in the future", t.Id)
 		}
 
 		// Check id duplicates
