@@ -1,9 +1,11 @@
 package keeper_test
 
 import (
-	"github.com/cosmicbet/ledger/x/wta/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/cosmicbet/ledger/x/wta/types"
 )
 
 func (suite *KeeperTestSuite) Test_ExportGenesis() {

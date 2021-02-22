@@ -82,7 +82,7 @@ func GetPastDrawsCmd() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(&res.Draws)
+			return clientCtx.PrintProto(res)
 		},
 	}
 
@@ -114,7 +114,7 @@ func GetTicketsCmd() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(&res.Tickets)
+			return clientCtx.PrintProto(res)
 		},
 	}
 
