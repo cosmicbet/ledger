@@ -9,7 +9,7 @@ BINDIR ?= $(GOPATH)/bin
 BUILDDIR ?= $(CURDIR)/build
 SIMAPP = ./app
 MOCKS_DIR = $(CURDIR)/tests/mocks
-HTTPS_GIT := https://github.com/cosmic-casino/ledger.git
+HTTPS_GIT := https://github.com/cosmicbet/ledger.git
 DOCKER := $(shell which docker)
 DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
 
@@ -49,8 +49,8 @@ comma := ,
 build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 # Process linker flags
-ldflags = -X 'github.com/cosmos/cosmos-sdk/version.Name=Desmos' \
- 	-X 'github.com/cosmos/cosmos-sdk/version.AppName=desmos' \
+ldflags = -X 'github.com/cosmos/cosmos-sdk/version.Name=CosmicCasino' \
+ 	-X 'github.com/cosmos/cosmos-sdk/version.AppName=casino' \
  	-X 'github.com/cosmos/cosmos-sdk/version.Version=$(VERSION)' \
     -X 'github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT)' \
   	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
@@ -179,8 +179,8 @@ test-sim-nondeterminism:
 
 test-sim-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
-	@echo "By default, ${HOME}/.desmos/config/genesis.json will be used."
-	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=${HOME}/.desmos/config/genesis.json \
+	@echo "By default, ${HOME}/.casino/config/genesis.json will be used."
+	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=${HOME}/.casino/config/genesis.json \
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 test-sim-import-export: runsim
@@ -193,8 +193,8 @@ test-sim-after-import: runsim
 
 test-sim-custom-genesis-multi-seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."
-	@echo "By default, ${HOME}/.desmos/config/genesis.json will be used."
-	@$(BINDIR)/runsim -Genesis=${HOME}/.desmos/config/genesis.json -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
+	@echo "By default, ${HOME}/.casino/config/genesis.json will be used."
+	@$(BINDIR)/runsim -Genesis=${HOME}/.casino/config/genesis.json -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
 
 test-sim-multi-seed-long: runsim
 	@echo "Running long multi-seed application simulation. This may take awhile!"
@@ -258,7 +258,7 @@ lint-fix:
 format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' | xargs gofmt -w -s
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' | xargs misspell -w
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' | xargs goimports -w -local github.com/cosmic-casino/ledger
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' | xargs goimports -w -local github.com/cosmicbet/ledger
 .PHONY: format
 
 ###############################################################################
@@ -288,11 +288,11 @@ proto-lint:
 	@$(DOCKER_BUF) check lint --error-format=json
 
 proto-check-breaking:
-	@$(DOCKER_BUF) check breaking --against $(HTTPS_GIT)#branch=master
+	@$(DOCKER_BUF) check breaking --against $(HTTPS_GIT)#branch=main
 
 TM_URL           = https://raw.githubusercontent.com/tendermint/tendermint/v0.34.3/proto/tendermint
 GOGO_PROTO_URL   = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
-COSMOS_URL 		 = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.40.1/proto/cosmos
+COSMOS_URL 		 = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.41.0/proto/cosmos
 COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
 CONFIO_URL 		 = https://raw.githubusercontent.com/confio/ics23/v0.6.3
 
@@ -352,19 +352,19 @@ proto-update-deps:
 ###                                Localnet                                 ###
 ###############################################################################
 
-build-docker-desmosnode:
+build-docker-cosmicbetnode:
 	$(MAKE) -C networks/local
 
 # Run a 4-node testnet locally
 localnet-start: build-linux localnet-stop
-	$(if $(shell docker inspect -f '{{ .Id }}' desmoslabs/desmos-env 2>/dev/null),$(info found image desmoslabs/desmos-env),$(MAKE) -C contrib/images desmos-env)
-	if ! [ -f build/node0/desmos/config/genesis.json ]; then docker run --rm \
+	$(if $(shell docker inspect -f '{{ .Id }}' cosmicbet/casino-env 2>/dev/null),$(info found image cosmicbet/casino-env),$(MAKE) -C contrib/images casino-env)
+	if ! [ -f build/node0/casino/config/genesis.json ]; then docker run --rm \
 		--user $(shell id -u):$(shell id -g) \
-		-v $(BUILDDIR):/desmos:Z \
+		-v $(BUILDDIR):/casino:Z \
 		-v /etc/group:/etc/group:ro \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/shadow:/etc/shadow:ro \
-		desmoslabs/desmos-env testnet --v 4 -o . --starting-ip-address 192.168.10.2 --keyring-backend=test ; fi
+		cosmicbet/casino-env testnet --v 4 -o . --starting-ip-address 192.168.10.2 --keyring-backend=test ; fi
 	docker-compose up -d
 
 # Stop testnet
