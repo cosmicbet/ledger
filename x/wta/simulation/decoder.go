@@ -3,6 +3,7 @@ package simulation
 import (
 	"bytes"
 	"fmt"
+	"time"
 
 	"github.com/cosmicbet/ledger/x/wta/types"
 
@@ -27,11 +28,12 @@ func NewDecodeStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 			cdc.MustUnmarshalBinaryBare(kvB.Value, &dataB)
 			return fmt.Sprintf("HistoricalDataA: %s\nHistoricalDataB: %s\n", &dataA, &dataB)
 
-		case bytes.Equal(kvA.Key, types.CurrentDrawStoreKey):
-			var drawA, drawB types.Draw
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &drawA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &drawB)
-			return fmt.Sprintf("CurrentDrawA: %s\nCurrentDrawB: %s\n", &drawA, &drawB)
+		case bytes.Equal(kvA.Key, types.CurrentDrawEndTimeStoreKey):
+			var drawA, drawB time.Time
+			drawA = types.MustUnmarshalDrawEndTime(kvA.Value)
+			drawB = types.MustUnmarshalDrawEndTime(kvB.Value)
+			return fmt.Sprintf("CurrentDrawEndTimeA: %s\nCurrentDrawEndTimeB: %s\n",
+				drawA.Format(time.RFC3339), drawB.Format(time.RFC3339))
 
 		default:
 			panic(fmt.Sprintf("unexpected %s key %X (%s)", types.ModuleName, kvA.Key, kvA.Key))

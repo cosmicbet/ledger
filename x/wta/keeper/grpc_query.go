@@ -56,9 +56,7 @@ func (k querier) Tickets(ctx context.Context, req *types.QueryTicketsRequest) (*
 // NextDraw queries the details of the next draw
 func (k querier) NextDraw(ctx context.Context, _ *types.QueryNextDrawRequest) (*types.QueryNextDrawResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
 	draw := k.GetCurrentDraw(sdkCtx)
-
 	return &types.QueryNextDrawResponse{Draw: draw}, nil
 }
 
@@ -93,7 +91,6 @@ func (k querier) PastDraws(ctx context.Context, req *types.QueryPastDrawsRequest
 // Params queries the currently stored parameters
 func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
 	params := k.GetParams(sdkCtx)
 	return &types.QueryParamsResponse{Params: params}, nil
 }

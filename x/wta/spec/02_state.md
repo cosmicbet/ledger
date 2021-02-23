@@ -27,16 +27,10 @@ TicketsStorePrefix + ticket_id | Ticket
 ```
 
 ## Draw
-A single draw is represented inside the store using the `Draw` object. It contains the ending time on which the winner will be drawn, and the prize amount of the draw itself.
-
-+++ https://github.com/cosmic.bet/ledger/blob/master/proto/cosmicbet/wta/v1beta1/models.proto#L26-L34
-
-The prize amount is updated each time a user buys one or more ticket.
-
-The current draw is stored using the following mapping: 
+A single draw is represented inside the store using different keys. Particularly, its end time is stored using the `CurrentDrawEndTimeStoreKey` key, and the current prize is the balance of the module account having name `PrizeCollectorName`.
 
 ```
-CurrentDrawStoreKey | Draw
+CurrentDrawEndTimeStoreKey | time.Time
 ```
 
 ## Historical draws

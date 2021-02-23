@@ -6,19 +6,19 @@ import (
 )
 
 // NewGenesisState returns a new GenesisState containing the provided data
-func NewGenesisState(draw Draw, tickets []Ticket, pastDraws []HistoricalDrawData, params Params) *GenesisState {
+func NewGenesisState(drawEndTime time.Time, tickets []Ticket, pastDraws []HistoricalDrawData, params Params) *GenesisState {
 	return &GenesisState{
-		Draw:      draw,
-		Tickets:   tickets,
-		PastDraws: pastDraws,
-		Params:    params,
+		DrawEndTime: drawEndTime,
+		Tickets:     tickets,
+		PastDraws:   pastDraws,
+		Params:      params,
 	}
 }
 
 // DefaultGenesisState returns a default GenesisState
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
-		EmptyDraw(time.Now().Add(time.Hour*24)),
+		time.Now().Add(time.Hour*24),
 		[]Ticket{},
 		[]HistoricalDrawData{},
 		DefaultParams(),
@@ -28,11 +28,8 @@ func DefaultGenesisState() *GenesisState {
 // ValidateGenesis validates the given genesis state and returns an error if something is invalid
 func ValidateGenesis(state *GenesisState) error {
 	// Validate the draw
-	if !state.Draw.EndTime.IsZero() {
-		err := state.Draw.Validate()
-		if err != nil {
-			return err
-		}
+	if state.DrawEndTime.IsZero() {
+		return fmt.Errorf("invalid draw end time: %s", state.DrawEndTime.Format(time.RFC3339))
 	}
 
 	// Validate the tickets
@@ -43,7 +40,7 @@ func ValidateGenesis(state *GenesisState) error {
 		}
 
 		// Check that the timestamp is not after the current draw
-		if t.Timestamp.After(state.Draw.EndTime) {
+		if t.Timestamp.After(state.DrawEndTime) {
 			return fmt.Errorf("ticket with id %s has creation date after the draw end time ", t.Id)
 		}
 

@@ -71,16 +71,9 @@ func RandTicketsSlice(r *rand.Rand, length int, accounts []simtypes.Account) []t
 
 // RandHistoricalDrawData returns a randomly generated HistoricalDrawData
 func RandHistoricalDrawData(r *rand.Rand, accounts []simtypes.Account) types.HistoricalDrawData {
-	// 50% chance of not having any ticket
-	var winningTicket *types.Ticket
-	if r.Intn(100) > 50 {
-		randTicket := RandTicket(r, accounts[r.Intn(len(accounts))].Address.String())
-		winningTicket = &randTicket
-	}
-
 	return types.NewHistoricalDrawData(
 		RandomDraw(r, time.Now().Add(-time.Minute*10)),
-		winningTicket,
+		RandTicket(r, accounts[r.Intn(len(accounts))].Address.String()),
 	)
 }
 

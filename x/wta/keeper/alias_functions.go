@@ -35,6 +35,23 @@ func (k Keeper) GetTickets(ctx sdk.Context) []types.Ticket {
 	return tickets
 }
 
+// GetDrawParticipantsAndTicketsSold returns the number of participants that have entered the draw,
+// and the number of tickets sold for such draw
+func (k Keeper) GetDrawParticipantsAndTicketsSold(ctx sdk.Context) (participants, ticketsSold uint32) {
+	participantsAddresses := map[string]bool{}
+	k.IterateTickets(ctx, func(index int64, ticket types.Ticket) (stop bool) {
+		if !participantsAddresses[ticket.Owner] {
+			participants++
+			participantsAddresses[ticket.Owner] = true
+		}
+
+		ticketsSold++
+		return false
+	})
+
+	return participants, ticketsSold
+}
+
 // IterateHistoricalDrawsData iterates through the historical data and performs the provided function
 func (k Keeper) IterateHistoricalDrawsData(ctx sdk.Context, fn func(index int64, data types.HistoricalDrawData) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
