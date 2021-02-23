@@ -115,7 +115,7 @@ func (k Keeper) TransferDrawPrize(ctx sdk.Context, prize sdk.Coins, winner sdk.A
 	return k.bk.SendCoinsFromModuleToAccount(ctx, types.PrizeCollectorName, winner, prize)
 }
 
-// SaveCurrentDraw stores the given expDraw as the next expDraw
+// SaveCurrentDraw stores the given draw as the next draw
 func (k Keeper) SaveCurrentDrawEndTime(ctx sdk.Context, endTime time.Time) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.CurrentDrawEndTimeStoreKey, types.MustMarshalDrawEndTime(endTime))
@@ -135,7 +135,7 @@ func (k Keeper) GetCurrentDraw(ctx sdk.Context) types.Draw {
 
 // ------------------------------------------------------------------------------------------------------------------
 
-// SaveHistoricalDraw saves the given expDraw as an historical expDraw
+// SaveHistoricalDraw saves the given draw as an historical draw
 func (k Keeper) SaveHistoricalDraw(ctx sdk.Context, draw types.HistoricalDrawData) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.HistoricalDataStoreKey(draw.Draw.EndTime), types.MustMarshalHistoricalDraw(k.cdc, draw))
