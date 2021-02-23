@@ -250,12 +250,12 @@ func (suite *KeeperTestSuite) Test_SaveCurrentDrawEndTime() {
 		toSave   time.Time
 	}{
 		{
-			name:     "saving expDraw when non existing",
+			name:     "saving draw when non existing",
 			existing: time.Time{},
 			toSave:   time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 		},
 		{
-			name:     "saving expDraw with existing one",
+			name:     "saving draw with existing one",
 			existing: time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 			toSave:   time.Date(2020, 1, 2, 00, 00, 00, 000, time.UTC),
 		},
@@ -284,7 +284,7 @@ func (suite *KeeperTestSuite) Test_GetCurrentDraw() {
 		expDraw     wtatypes.Draw
 	}{
 		{
-			name:        "empty prize expDraw",
+			name:        "empty prize draw",
 			drawEndTime: time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 			prize:       sdk.NewCoins(),
 			tickets:     nil,
