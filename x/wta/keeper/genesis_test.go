@@ -11,19 +11,14 @@ import (
 func (suite *KeeperTestSuite) Test_ExportGenesis() {
 	usecases := []struct {
 		name            string
-		draw            types.Draw
+		drawEndDate     time.Time
 		tickets         []types.Ticket
 		historicalDraws []types.HistoricalDrawData
 		params          types.Params
 	}{
 		{
-			name: "empty tickets and historical data",
-			draw: types.NewDraw(
-				1,
-				1,
-				sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
-				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-			),
+			name:            "empty tickets and historical data",
+			drawEndDate:     time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 			tickets:         nil,
 			historicalDraws: nil,
 			params: types.NewParams(
@@ -35,13 +30,8 @@ func (suite *KeeperTestSuite) Test_ExportGenesis() {
 			),
 		},
 		{
-			name: "non empty tickets and historical data",
-			draw: types.NewDraw(
-				1,
-				1,
-				sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
-				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-			),
+			name:        "non empty tickets and historical data",
+			drawEndDate: time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 			tickets: []types.Ticket{
 				types.NewTicket(
 					"1",
@@ -62,11 +52,11 @@ func (suite *KeeperTestSuite) Test_ExportGenesis() {
 						sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 						time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 					),
-					&types.Ticket{
-						Id:        "old-ticket",
-						Owner:     "old-winner",
-						Timestamp: time.Date(2019, 12, 31, 23, 59, 59, 000, time.UTC),
-					},
+					types.NewTicket(
+						"old-ticket",
+						time.Date(2019, 12, 31, 23, 59, 59, 000, time.UTC),
+						"old-winner",
+					),
 				),
 			},
 			params: types.NewParams(
@@ -82,7 +72,7 @@ func (suite *KeeperTestSuite) Test_ExportGenesis() {
 	for _, uc := range usecases {
 		suite.SetupTest()
 		suite.Run(uc.name, func() {
-			suite.keeper.SaveCurrentDraw(suite.ctx, uc.draw)
+			suite.keeper.SaveCurrentDrawEndTime(suite.ctx, uc.drawEndDate)
 			suite.keeper.SaveTickets(suite.ctx, uc.tickets)
 			for _, h := range uc.historicalDraws {
 				suite.keeper.SaveHistoricalDraw(suite.ctx, h)
@@ -90,7 +80,7 @@ func (suite *KeeperTestSuite) Test_ExportGenesis() {
 			suite.keeper.SetParams(suite.ctx, uc.params)
 
 			exported := suite.keeper.ExportGenesis(suite.ctx)
-			suite.Require().Equal(uc.draw, exported.Draw)
+			suite.Require().Equal(uc.drawEndDate, exported.DrawEndTime)
 			suite.Require().Equal(uc.tickets, exported.Tickets)
 			suite.Require().Equal(uc.historicalDraws, exported.PastDraws)
 			suite.Require().Equal(uc.params, exported.Params)
@@ -106,12 +96,7 @@ func (suite *KeeperTestSuite) Test_ImportGenesis() {
 		{
 			name: "empty tickets and historical data",
 			genesis: types.NewGenesisState(
-				types.NewDraw(
-					1,
-					1,
-					sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
-					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-				),
+				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 				nil,
 				nil,
 				types.NewParams(
@@ -126,12 +111,7 @@ func (suite *KeeperTestSuite) Test_ImportGenesis() {
 		{
 			name: "non empty tickets and historical data",
 			genesis: types.NewGenesisState(
-				types.NewDraw(
-					1,
-					1,
-					sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
-					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-				),
+				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 				[]types.Ticket{
 					types.NewTicket(
 						"1",
@@ -152,11 +132,11 @@ func (suite *KeeperTestSuite) Test_ImportGenesis() {
 							sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 							time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 						),
-						&types.Ticket{
-							Id:        "old-ticket",
-							Owner:     "old-winner",
-							Timestamp: time.Date(2019, 12, 31, 23, 59, 59, 000, time.UTC),
-						},
+						types.NewTicket(
+							"old-ticket",
+							time.Date(2019, 12, 31, 23, 59, 59, 000, time.UTC),
+							"old-winner",
+						),
 					),
 				},
 				types.NewParams(
@@ -176,7 +156,7 @@ func (suite *KeeperTestSuite) Test_ImportGenesis() {
 			suite.keeper.InitGenesis(suite.ctx, *uc.genesis)
 
 			draw := suite.keeper.GetCurrentDraw(suite.ctx)
-			suite.Require().Equal(uc.genesis.Draw, draw)
+			suite.Require().Equal(uc.genesis.DrawEndTime, draw.EndTime)
 
 			tickets := suite.keeper.GetTickets(suite.ctx)
 			suite.Require().Equal(uc.genesis.Tickets, tickets)

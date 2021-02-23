@@ -80,10 +80,13 @@ func (suite *KeeperTestSuite) Test_Querier_Tickets() {
 
 func (suite *KeeperTestSuite) Test_Querier_NextDraw() {
 	usecases := []struct {
-		name      string
-		draw      types.Draw
-		req       *types.QueryNextDrawRequest
-		shouldErr bool
+		name        string
+		drawEndTime time.Time
+		prize       sdk.Coins
+		tickets     []types.Ticket
+		req         *types.QueryNextDrawRequest
+		shouldErr   bool
+		expDraw     types.Draw
 	}{
 		{
 			name:      "invalid request",
@@ -91,22 +94,42 @@ func (suite *KeeperTestSuite) Test_Querier_NextDraw() {
 			shouldErr: true,
 		},
 		{
-			name: "valid request",
-			draw: types.NewDraw(
-				10,
-				100,
+			name:        "valid request",
+			drawEndTime: time.Date(2020, 1, 2, 00, 00, 00, 000, time.UTC),
+			prize:       sdk.NewCoins(sdk.NewInt64Coin("stake", 1000)),
+			tickets: []types.Ticket{
+				types.NewTicket(
+					"ticket-1",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-1",
+				),
+				types.NewTicket(
+					"ticket-2",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-1",
+				),
+				types.NewTicket(
+					"ticket-3",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-2",
+				),
+			},
+			req:       &types.QueryNextDrawRequest{},
+			shouldErr: false,
+			expDraw: types.NewDraw(
+				2,
+				3,
 				sdk.NewCoins(sdk.NewInt64Coin("stake", 1000)),
 				time.Date(2020, 1, 2, 00, 00, 00, 000, time.UTC),
 			),
-			req:       &types.QueryNextDrawRequest{},
-			shouldErr: false,
 		},
 	}
 
 	for _, uc := range usecases {
 		suite.SetupTest()
 		suite.Run(uc.name, func() {
-			suite.keeper.SaveCurrentDraw(suite.ctx, uc.draw)
+			suite.SaveDrawData(suite.ctx, uc.drawEndTime, uc.prize)
+			suite.keeper.SaveTickets(suite.ctx, uc.tickets)
 
 			querier := keeper.NewQuerierImpl(suite.keeper)
 			res, err := querier.NextDraw(sdk.WrapSDKContext(suite.ctx), uc.req)
@@ -115,7 +138,7 @@ func (suite *KeeperTestSuite) Test_Querier_NextDraw() {
 				suite.Require().Error(err)
 			} else {
 				suite.Require().NoError(err)
-				suite.Require().Equal(uc.draw, res.Draw)
+				suite.Require().Equal(uc.expDraw, res.Draw)
 			}
 		})
 	}
@@ -130,11 +153,11 @@ func (suite *KeeperTestSuite) Test_Querier_PastDraws() {
 				sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 			),
-			&types.Ticket{
-				Id:        "ticket-1",
-				Owner:     "winner-1",
-				Timestamp: time.Date(2019, 12, 31, 23, 59, 59, 999, time.UTC),
-			},
+			types.NewTicket(
+				"ticket-1",
+				time.Date(2019, 12, 31, 23, 59, 59, 999, time.UTC),
+				"winner-1",
+			),
 		),
 		types.NewHistoricalDrawData(
 			types.NewDraw(
@@ -143,11 +166,11 @@ func (suite *KeeperTestSuite) Test_Querier_PastDraws() {
 				sdk.NewCoins(sdk.NewInt64Coin("stake", 1000)),
 				time.Date(2020, 1, 2, 00, 00, 00, 000, time.UTC),
 			),
-			&types.Ticket{
-				Id:        "ticket-2",
-				Owner:     "winner-3",
-				Timestamp: time.Date(2020, 1, 1, 23, 59, 59, 999, time.UTC),
-			},
+			types.NewTicket(
+				"ticket-2",
+				time.Date(2020, 1, 1, 23, 59, 59, 999, time.UTC),
+				"winner-3",
+			),
 		),
 	}
 

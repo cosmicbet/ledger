@@ -69,11 +69,11 @@ func (suite *KeeperTestSuite) Test_IterateHistoricalDrawsData() {
 				sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 			),
-			&types.Ticket{
-				Id:        "ticket-1",
-				Owner:     "winner-1",
-				Timestamp: time.Date(2019, 12, 31, 23, 59, 59, 999, time.UTC),
-			},
+			types.NewTicket(
+				"ticket-1",
+				time.Date(2019, 12, 31, 23, 59, 59, 999, time.UTC),
+				"winner-1",
+			),
 		),
 		types.NewHistoricalDrawData(
 			types.NewDraw(
@@ -82,11 +82,11 @@ func (suite *KeeperTestSuite) Test_IterateHistoricalDrawsData() {
 				sdk.NewCoins(sdk.NewInt64Coin("stake", 1000)),
 				time.Date(2020, 1, 2, 00, 00, 00, 000, time.UTC),
 			),
-			&types.Ticket{
-				Id:        "ticket-2",
-				Owner:     "winner-3",
-				Timestamp: time.Date(2020, 1, 1, 23, 59, 59, 999, time.UTC),
-			},
+			types.NewTicket(
+				"ticket-2",
+				time.Date(2020, 1, 1, 23, 59, 59, 999, time.UTC),
+				"winner-3",
+			),
 		),
 	}
 	for _, data := range data {
@@ -110,11 +110,11 @@ func (suite *KeeperTestSuite) Test_GetHistoricalDrawsData() {
 				sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 			),
-			&types.Ticket{
-				Id:        "ticket-1",
-				Owner:     "winner-1",
-				Timestamp: time.Date(2019, 12, 31, 23, 59, 59, 999, time.UTC),
-			},
+			types.NewTicket(
+				"ticket-1",
+				time.Date(2019, 12, 31, 23, 59, 59, 999, time.UTC),
+				"winner-1",
+			),
 		),
 		types.NewHistoricalDrawData(
 			types.NewDraw(
@@ -123,11 +123,11 @@ func (suite *KeeperTestSuite) Test_GetHistoricalDrawsData() {
 				sdk.NewCoins(sdk.NewInt64Coin("stake", 1000)),
 				time.Date(2020, 1, 2, 00, 00, 00, 000, time.UTC),
 			),
-			&types.Ticket{
-				Id:        "ticket-2",
-				Owner:     "winner-3",
-				Timestamp: time.Date(2020, 1, 1, 23, 59, 59, 999, time.UTC),
-			},
+			types.NewTicket(
+				"ticket-2",
+				time.Date(2020, 1, 1, 23, 59, 59, 999, time.UTC),
+				"winner-3",
+			),
 		),
 	}
 	for _, data := range data {
