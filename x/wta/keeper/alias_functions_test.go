@@ -60,6 +60,86 @@ func (suite *KeeperTestSuite) Test_GetTickets() {
 	suite.Require().Equal(tickets, stored)
 }
 
+func (suite *KeeperTestSuite) Test_GetDrawParticipantsAndTicketsSold() {
+	usecases := []struct {
+		name            string
+		tickets         []types.Ticket
+		expParticipants uint32
+		expTicketsSold  uint32
+	}{
+		{
+			name: "multiple ticket from same participant",
+			tickets: []types.Ticket{
+				types.NewTicket(
+					"ticket-1",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-1",
+				),
+				types.NewTicket(
+					"ticket-2",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-1",
+				),
+				types.NewTicket(
+					"ticket-3",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-1",
+				),
+			},
+			expParticipants: 1,
+			expTicketsSold:  3,
+		},
+		{
+			name: "multiple tickets from multiple participants",
+			tickets: []types.Ticket{
+				types.NewTicket(
+					"ticket-1",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-1",
+				),
+				types.NewTicket(
+					"ticket-2",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-1",
+				),
+				types.NewTicket(
+					"ticket-3",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-1",
+				),
+				types.NewTicket(
+					"ticket-20",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-2",
+				),
+				types.NewTicket(
+					"ticket-21",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-2",
+				),
+				types.NewTicket(
+					"ticket-30",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-3",
+				),
+			},
+			expParticipants: 3,
+			expTicketsSold:  6,
+		},
+	}
+
+	for _, uc := range usecases {
+		suite.SetupTest()
+		suite.Run(uc.name, func() {
+			suite.keeper.SaveTickets(suite.ctx, uc.tickets)
+
+			participants, ticketsSold := suite.keeper.GetDrawParticipantsAndTicketsSold(suite.ctx)
+			suite.Require().Equal(uc.expParticipants, participants)
+			suite.Require().Equal(uc.expTicketsSold, ticketsSold)
+		})
+	}
+}
+
 func (suite *KeeperTestSuite) Test_IterateHistoricalDrawsData() {
 	data := []types.HistoricalDrawData{
 		types.NewHistoricalDrawData(
