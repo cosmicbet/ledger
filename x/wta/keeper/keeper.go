@@ -1,10 +1,13 @@
 package keeper
 
 import (
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -63,31 +66,27 @@ func (k Keeper) WithdrawTicketsCost(ctx sdk.Context, quantity uint32, buyer sdk.
 
 	params := k.GetParams(ctx)
 
-	// Set the prize pool
+	// Update the prize pool
 	prizeAmount := sdk.NewCoin(ticketsTotal.Denom, ticketsTotal.Amount.Mul(params.PrizePercentage).QuoRaw(100))
-
 	err := k.bk.SendCoinsFromAccountToModule(ctx, buyer, types.PrizeCollectorName, sdk.NewCoins(prizeAmount))
 	if err != nil {
 		return err
 	}
 
-	k.UpdateDrawData(ctx, 1, quantity, prizeAmount)
-
-	// Send the pool amount to the pool
+	// Send the pool amount to the community pool
 	poolAmount := sdk.NewCoin(ticketsTotal.Denom, ticketsTotal.Amount.Mul(params.CommunityPoolPercentage).QuoRaw(100))
 	err = k.dk.FundCommunityPool(ctx, sdk.NewCoins(poolAmount), buyer)
 	if err != nil {
 		return err
 	}
 
-	// Send the tokens to burn to the proper module
+	// Burn the tokens
 	burnAmount := sdk.NewCoin(ticketsTotal.Denom, ticketsTotal.Amount.Mul(params.BurnPercentage).QuoRaw(100))
 	err = k.bk.SendCoinsFromAccountToModule(ctx, buyer, types.PrizeBurnerName, sdk.NewCoins(burnAmount))
 	if err != nil {
 		return err
 	}
 
-	// Burn the tokens
 	return k.bk.BurnCoins(ctx, types.PrizeBurnerName, sdk.NewCoins(burnAmount))
 }
 
@@ -111,43 +110,32 @@ func (k Keeper) WipeCurrentTickets(ctx sdk.Context) {
 
 // ------------------------------------------------------------------------------------------------------------------
 
-// UpdateDrawData increments the current draw prize to the provided amount
-func (k Keeper) UpdateDrawData(ctx sdk.Context, usersAmount, ticketsAmount uint32, amount sdk.Coin) {
-	draw := k.GetCurrentDraw(ctx)
-	draw.Prize = draw.Prize.Add(amount)
-	draw.Participants += usersAmount
-	draw.TicketsSold += ticketsAmount
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypePrizeIncrease,
-			sdk.NewAttribute(types.AttributeKeyPrizeAmount, draw.Prize.String()),
-		),
-	)
-
-	k.SaveCurrentDraw(ctx, draw)
-}
-
 // TransferDrawPrize transfers the provided prize to the specified winner account
 func (k Keeper) TransferDrawPrize(ctx sdk.Context, prize sdk.Coins, winner sdk.AccAddress) error {
 	return k.bk.SendCoinsFromModuleToAccount(ctx, types.PrizeCollectorName, winner, prize)
 }
 
-// SaveCurrentDraw stores the given draw as the next draw
-func (k Keeper) SaveCurrentDraw(ctx sdk.Context, draw types.Draw) {
+// SaveCurrentDraw stores the given expDraw as the next expDraw
+func (k Keeper) SaveCurrentDrawEndTime(ctx sdk.Context, endTime time.Time) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.CurrentDrawStoreKey, types.MustMarshalDraw(k.cdc, draw))
+	store.Set(types.CurrentDrawEndTimeStoreKey, types.MustMarshalDrawEndTime(endTime))
 }
 
 // GetCurrentDraw returns the Draw for which the tickets can be currently bought
 func (k Keeper) GetCurrentDraw(ctx sdk.Context) types.Draw {
 	store := ctx.KVStore(k.storeKey)
-	return types.MustUnmarshalDraw(k.cdc, store.Get(types.CurrentDrawStoreKey))
+	endTime := types.MustUnmarshalDrawEndTime(store.Get(types.CurrentDrawEndTimeStoreKey))
+
+	acc := authtypes.NewModuleAddress(types.PrizeCollectorName)
+	prize := k.bk.GetAllBalances(ctx, acc)
+
+	participants, ticketsSold := k.GetDrawParticipantsAndTicketsSold(ctx)
+	return types.NewDraw(participants, ticketsSold, prize, endTime)
 }
 
 // ------------------------------------------------------------------------------------------------------------------
 
-// SaveHistoricalDraw saves the given draw as an historical draw
+// SaveHistoricalDraw saves the given expDraw as an historical expDraw
 func (k Keeper) SaveHistoricalDraw(ctx sdk.Context, draw types.HistoricalDrawData) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.HistoricalDataStoreKey(draw.Draw.EndTime), types.MustMarshalHistoricalDraw(k.cdc, draw))

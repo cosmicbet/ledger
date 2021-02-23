@@ -191,66 +191,6 @@ func (suite *KeeperTestSuite) Test_WipeCurrentTickets() {
 	}
 }
 
-func (suite *KeeperTestSuite) Test_UpdateDrawData() {
-	usecases := []struct {
-		name          string
-		existingDraw  wtatypes.Draw
-		usersAmount   uint32
-		ticketsAmount uint32
-		increment     sdk.Coin
-		expectedDraw  wtatypes.Draw
-	}{
-		{
-			name: "empty prize draw",
-			existingDraw: wtatypes.NewDraw(
-				0,
-				0,
-				sdk.NewCoins(),
-				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-			),
-			usersAmount:   1,
-			ticketsAmount: 1,
-			increment:     sdk.NewInt64Coin("stake", 100),
-			expectedDraw: wtatypes.NewDraw(
-				1,
-				1,
-				sdk.NewCoins(sdk.NewInt64Coin("stake", 100)),
-				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-			),
-		},
-		{
-			name: "non empty prize draw",
-			existingDraw: wtatypes.NewDraw(
-				2,
-				100,
-				sdk.NewCoins(sdk.NewInt64Coin("stake", 10000)),
-				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-			),
-			usersAmount:   1,
-			ticketsAmount: 20,
-			increment:     sdk.NewInt64Coin("stake", 2000),
-			expectedDraw: wtatypes.NewDraw(
-				3,
-				120,
-				sdk.NewCoins(sdk.NewInt64Coin("stake", 12000)),
-				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-			),
-		},
-	}
-
-	for _, uc := range usecases {
-		suite.SetupTest()
-		suite.Run(uc.name, func() {
-			suite.keeper.SaveCurrentDraw(suite.ctx, uc.existingDraw)
-
-			suite.keeper.UpdateDrawData(suite.ctx, uc.usersAmount, uc.ticketsAmount, uc.increment)
-
-			draw := suite.keeper.GetCurrentDraw(suite.ctx)
-			suite.Require().True(draw.Equal(uc.expectedDraw))
-		})
-	}
-}
-
 func (suite *KeeperTestSuite) Test_TransferDrawPrize() {
 	usecases := []struct {
 		name           string
@@ -303,61 +243,52 @@ func (suite *KeeperTestSuite) Test_TransferDrawPrize() {
 	}
 }
 
-func (suite *KeeperTestSuite) Test_SaveCurrentDraw() {
+func (suite *KeeperTestSuite) Test_SaveCurrentDrawEndTime() {
 	usecases := []struct {
 		name     string
-		existing *wtatypes.Draw
-		toSave   wtatypes.Draw
+		existing time.Time
+		toSave   time.Time
 	}{
 		{
-			name:     "saving draw when non existing",
-			existing: nil,
-			toSave: wtatypes.NewDraw(
-				1,
-				1,
-				sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
-				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-			),
+			name:     "saving expDraw when non existing",
+			existing: time.Time{},
+			toSave:   time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 		},
 		{
-			name: "saving draw with existing one",
-			existing: &wtatypes.Draw{
-				Participants: 1,
-				TicketsSold:  1,
-				Prize:        sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
-				EndTime:      time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-			},
-			toSave: wtatypes.NewDraw(
-				100,
-				100,
-				sdk.NewCoins(sdk.NewInt64Coin("uatom", 10000)),
-				time.Date(2020, 1, 2, 00, 00, 00, 000, time.UTC),
-			),
+			name:     "saving expDraw with existing one",
+			existing: time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+			toSave:   time.Date(2020, 1, 2, 00, 00, 00, 000, time.UTC),
 		},
 	}
 
 	for _, uc := range usecases {
 		suite.SetupTest()
 		suite.Run(uc.name, func() {
-			if uc.existing != nil {
-				suite.keeper.SaveCurrentDraw(suite.ctx, *uc.existing)
-				suite.Require().True(suite.keeper.GetCurrentDraw(suite.ctx).Equal(*uc.existing))
+			if !uc.existing.IsZero() {
+				suite.keeper.SaveCurrentDrawEndTime(suite.ctx, uc.existing)
+				suite.Require().True(suite.keeper.GetCurrentDraw(suite.ctx).EndTime.Equal(uc.existing))
 			}
 
-			suite.keeper.SaveCurrentDraw(suite.ctx, uc.toSave)
-			suite.Require().True(suite.keeper.GetCurrentDraw(suite.ctx).Equal(uc.toSave))
+			suite.keeper.SaveCurrentDrawEndTime(suite.ctx, uc.toSave)
+			suite.Require().True(suite.keeper.GetCurrentDraw(suite.ctx).EndTime.Equal(uc.toSave))
 		})
 	}
 }
 
 func (suite *KeeperTestSuite) Test_GetCurrentDraw() {
 	usecases := []struct {
-		name string
-		draw wtatypes.Draw
+		name        string
+		drawEndTime time.Time
+		prize       sdk.Coins
+		tickets     []wtatypes.Ticket
+		expDraw     wtatypes.Draw
 	}{
 		{
-			name: "empty prize draw",
-			draw: wtatypes.NewDraw(
+			name:        "empty prize expDraw",
+			drawEndTime: time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+			prize:       sdk.NewCoins(),
+			tickets:     nil,
+			expDraw: wtatypes.NewDraw(
 				0,
 				0,
 				sdk.NewCoins(),
@@ -365,10 +296,29 @@ func (suite *KeeperTestSuite) Test_GetCurrentDraw() {
 			),
 		},
 		{
-			name: "non empty prize draw",
-			draw: wtatypes.NewDraw(
-				1,
-				1,
+			name:        "participants and tickets count are computed properly",
+			drawEndTime: time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+			prize:       sdk.NewCoins(sdk.NewInt64Coin("stake", 1000)),
+			tickets: []wtatypes.Ticket{
+				wtatypes.NewTicket(
+					"ticket-1",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-1",
+				),
+				wtatypes.NewTicket(
+					"ticket-2",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-1",
+				),
+				wtatypes.NewTicket(
+					"ticket-3",
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					"owner-2",
+				),
+			},
+			expDraw: wtatypes.NewDraw(
+				2,
+				3,
 				sdk.NewCoins(sdk.NewInt64Coin("stake", 1000)),
 				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 			),
@@ -378,10 +328,11 @@ func (suite *KeeperTestSuite) Test_GetCurrentDraw() {
 	for _, uc := range usecases {
 		suite.SetupTest()
 		suite.Run(uc.name, func() {
-			suite.keeper.SaveCurrentDraw(suite.ctx, uc.draw)
+			suite.SaveDrawData(suite.ctx, uc.drawEndTime, uc.prize)
+			suite.keeper.SaveTickets(suite.ctx, uc.tickets)
 
 			stored := suite.keeper.GetCurrentDraw(suite.ctx)
-			suite.Require().True(stored.Equal(uc.draw))
+			suite.Require().True(stored.Equal(uc.expDraw))
 		})
 	}
 }
@@ -403,11 +354,11 @@ func (suite *KeeperTestSuite) Test_SaveHistoricalDraw() {
 					sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 				),
-				&wtatypes.Ticket{
-					Id:        "winning-ticket",
-					Timestamp: time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
-					Owner:     "winner",
-				},
+				wtatypes.NewTicket(
+					"winning-ticket",
+					time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
+					"winner",
+				),
 			),
 			expStored: []wtatypes.HistoricalDrawData{
 				wtatypes.NewHistoricalDrawData(
@@ -417,11 +368,11 @@ func (suite *KeeperTestSuite) Test_SaveHistoricalDraw() {
 						sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 						time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 					),
-					&wtatypes.Ticket{
-						Id:        "winning-ticket",
-						Timestamp: time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
-						Owner:     "winner",
-					},
+					wtatypes.NewTicket(
+						"winning-ticket",
+						time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
+						"winner",
+					),
 				),
 			},
 		},
@@ -434,7 +385,11 @@ func (suite *KeeperTestSuite) Test_SaveHistoricalDraw() {
 					sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 				),
-				WinningTicket: nil,
+				WinningTicket: wtatypes.NewTicket(
+					"winning-ticket-1",
+					time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
+					"winner-1",
+				),
 			},
 			toStore: wtatypes.NewHistoricalDrawData(
 				wtatypes.NewDraw(
@@ -443,11 +398,11 @@ func (suite *KeeperTestSuite) Test_SaveHistoricalDraw() {
 					sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 				),
-				&wtatypes.Ticket{
-					Id:        "winning-ticket",
-					Timestamp: time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
-					Owner:     "winner",
-				},
+				wtatypes.NewTicket(
+					"winning-ticket-2",
+					time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
+					"winner-2",
+				),
 			),
 			expStored: []wtatypes.HistoricalDrawData{
 				wtatypes.NewHistoricalDrawData(
@@ -457,11 +412,11 @@ func (suite *KeeperTestSuite) Test_SaveHistoricalDraw() {
 						sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 						time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 					),
-					&wtatypes.Ticket{
-						Id:        "winning-ticket",
-						Timestamp: time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
-						Owner:     "winner",
-					},
+					wtatypes.NewTicket(
+						"winning-ticket-2",
+						time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
+						"winner-2",
+					),
 				),
 			},
 		},
@@ -474,11 +429,11 @@ func (suite *KeeperTestSuite) Test_SaveHistoricalDraw() {
 					sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 				),
-				WinningTicket: &wtatypes.Ticket{
-					Id:        "winning-ticket",
-					Timestamp: time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
-					Owner:     "winner",
-				},
+				WinningTicket: wtatypes.NewTicket(
+					"winning-ticket",
+					time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
+					"winner",
+				),
 			},
 			toStore: wtatypes.NewHistoricalDrawData(
 				wtatypes.NewDraw(
@@ -487,11 +442,11 @@ func (suite *KeeperTestSuite) Test_SaveHistoricalDraw() {
 					sdk.NewCoins(sdk.NewInt64Coin("stake", 100)),
 					time.Date(2021, 1, 1, 00, 00, 00, 000, time.UTC),
 				),
-				&wtatypes.Ticket{
-					Id:        "winning-ticket-2",
-					Timestamp: time.Date(2020, 12, 31, 23, 50, 60, 000, time.UTC),
-					Owner:     "winner-2",
-				},
+				wtatypes.NewTicket(
+					"winning-ticket-2",
+					time.Date(2020, 12, 31, 23, 50, 60, 000, time.UTC),
+					"winner-2",
+				),
 			),
 			expStored: []wtatypes.HistoricalDrawData{
 				wtatypes.NewHistoricalDrawData(
@@ -501,11 +456,11 @@ func (suite *KeeperTestSuite) Test_SaveHistoricalDraw() {
 						sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 						time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 					),
-					&wtatypes.Ticket{
-						Id:        "winning-ticket",
-						Timestamp: time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
-						Owner:     "winner",
-					},
+					wtatypes.NewTicket(
+						"winning-ticket",
+						time.Date(2019, 12, 31, 23, 50, 60, 000, time.UTC),
+						"winner",
+					),
 				),
 				wtatypes.NewHistoricalDrawData(
 					wtatypes.NewDraw(
@@ -514,11 +469,11 @@ func (suite *KeeperTestSuite) Test_SaveHistoricalDraw() {
 						sdk.NewCoins(sdk.NewInt64Coin("stake", 100)),
 						time.Date(2021, 1, 1, 00, 00, 00, 000, time.UTC),
 					),
-					&wtatypes.Ticket{
-						Id:        "winning-ticket-2",
-						Timestamp: time.Date(2020, 12, 31, 23, 50, 60, 000, time.UTC),
-						Owner:     "winner-2",
-					},
+					wtatypes.NewTicket(
+						"winning-ticket-2",
+						time.Date(2020, 12, 31, 23, 50, 60, 000, time.UTC),
+						"winner-2",
+					),
 				),
 			},
 		},

@@ -117,3 +117,10 @@ func (suite *KeeperTestSuite) SetupTest() {
 		suite.cdc, keys[wtatypes.StoreKey], suite.pk.Subspace(wtatypes.DefaultParamSpace), suite.ak, suite.bk, suite.dk,
 	)
 }
+
+func (suite *KeeperTestSuite) SaveDrawData(ctx sdk.Context, endTime time.Time, prize sdk.Coins) {
+	suite.keeper.SaveCurrentDrawEndTime(ctx, endTime)
+
+	addr := authtypes.NewModuleAddress(wtatypes.PrizeCollectorName)
+	suite.Require().NoError(suite.bk.SetBalances(ctx, addr, prize))
+}

@@ -22,12 +22,11 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	tickets := k.GetTickets(ctx)
 
-	var winningTicket *types.Ticket
 	if len(tickets) > 0 {
 
 		// Get a random winning ticket
 		r := types.NewRandFromCtx(ctx)
-		winningTicket = &tickets[r.Intn(len(tickets))]
+		winningTicket := tickets[r.Intn(len(tickets))]
 
 		winner, err := sdk.AccAddressFromBech32(winningTicket.Owner)
 		if err != nil {
@@ -47,23 +46,22 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				sdk.NewAttribute(types.AttributeKeyWonAmount, draw.Prize.String()),
 			),
 		)
-	}
 
-	// Save the past draw
-	k.SaveHistoricalDraw(ctx, types.NewHistoricalDrawData(draw, winningTicket))
+		// Save the past draw
+		k.SaveHistoricalDraw(ctx, types.NewHistoricalDrawData(draw, winningTicket))
+	}
 
 	// Remove all the tickets
 	k.WipeCurrentTickets(ctx)
 
 	// Create a new draw
 	endTime := ctx.BlockTime().Add(k.GetParams(ctx).DrawDuration)
-	newDraw := types.EmptyDraw(endTime)
-	k.SaveCurrentDraw(ctx, newDraw)
+	k.SaveCurrentDrawEndTime(ctx, endTime)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeNewDraw,
-			sdk.NewAttribute(types.AttributeKeyDrawClosing, newDraw.EndTime.Format(time.RFC3339)),
+			sdk.NewAttribute(types.AttributeKeyDrawClosing, endTime.Format(time.RFC3339)),
 		),
 	)
 }
