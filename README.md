@@ -1,7 +1,7 @@
 # Cosmic Casino
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/cosmicbet/ledger/Tests)](https://github.com/cosmicbet/ledger/actions?query=workflow%3A%22Tests)
-[![codecov](https://codecov.io/gh/cosmicbet/ledger/branch/master/graph/badge.svg)](https://codecov.io/gh/cosmicbet/ledger/branch/master)
+[![codecov](https://codecov.io/gh/cosmicbet/ledger/branch/main/graph/badge.svg)](https://codecov.io/gh/cosmicbet/ledger/branch/main)
 [![Go Report Card](https://goreportcard.com/badge/github.com/cosmicbet/ledger)](https://goreportcard.com/report/github.com/cosmicbet/ledger)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/cosmicbet/ledger.svg)
 ![GitHub](https://img.shields.io/github/license/cosmicbet/ledger.svg)
