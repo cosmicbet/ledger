@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -18,7 +20,7 @@ import (
 func RandomizedGenState(simState *module.SimulationState) {
 	// Create a random genesis state and serialize that
 	genesisState := types.NewGenesisState(
-		RandomDraw(simState.Rand, time.Now().Add(time.Minute*1)),
+		RandDate(simState.Rand, time.Now().Add(time.Minute*1)),
 		RandTicketsSlice(simState.Rand, 20, simState.Accounts),
 		RandHistoricalDrawsData(simState.Rand, 50, simState.Accounts),
 		RandomParams(simState.Rand),
@@ -33,13 +35,15 @@ func RandomizedGenState(simState *module.SimulationState) {
 	fmt.Printf("Selected randomly generated %s parameters:\n%s\n", types.ModuleName, bz)
 
 	// Update the coins supply and the prize collector balance based on the generated draw prize
+	prize := RandCoint(simState.Rand, 100000)
+
 	var bankState banktypes.GenesisState
 	simState.Cdc.MustUnmarshalJSON(simState.GenState[banktypes.ModuleName], &bankState)
 
-	bankState.Supply = bankState.Supply.Add(genesisState.Draw.Prize...)
+	bankState.Supply = bankState.Supply.Add(prize)
 	bankState.Balances = append(bankState.Balances, banktypes.Balance{
 		Address: authtypes.NewModuleAddress(types.PrizeCollectorName).String(),
-		Coins:   genesisState.Draw.Prize,
+		Coins:   sdk.NewCoins(prize),
 	})
 
 	simState.GenState[banktypes.ModuleName] = simState.Cdc.MustMarshalJSON(&bankState)

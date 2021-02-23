@@ -38,7 +38,7 @@ message Draw {
 // HistoricalDrawData contains the data of a past draw and its winner
 message HistoricalDrawData {
   Draw draw = 1 [ (gogoproto.nullable) = false ];
-  Ticket winning_ticket = 2;
+  Ticket winning_ticket = 2 [(gogoproto.nullable) = false];
 }
 
 // HistoricalDrawsData represents a slice of past draws data

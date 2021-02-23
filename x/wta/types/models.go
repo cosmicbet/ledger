@@ -78,13 +78,6 @@ func IsTicketIDDuplicated(id string, slice []Ticket) bool {
 
 // ------------------------------------------------------------------------------------------------------------------
 
-// EmptyDraw returns a new Draw that will end on the given time
-func EmptyDraw(endTime time.Time) Draw {
-	return Draw{
-		EndTime: endTime,
-	}
-}
-
 // NewDraw allows to build a new Draw instance
 func NewDraw(participants, ticketsSold uint32, prize sdk.Coins, endTime time.Time) Draw {
 	return Draw{
@@ -117,41 +110,24 @@ func (d Draw) Equal(e Draw) bool {
 		d.EndTime.Equal(e.EndTime)
 }
 
-// MarshalDraw marshals the given Draw as a byte array
-func MarshalDraw(cdc codec.BinaryMarshaler, draw Draw) ([]byte, error) {
-	return cdc.MarshalBinaryBare(&draw)
+// MustMarshalDraw marshals the given time.Time as a byte array and panics on error
+func MustMarshalDrawEndTime(endTime time.Time) []byte {
+	return []byte(endTime.Format(time.RFC3339))
 }
 
-// MustMarshalDraw marshals the given Draw as a byte array and panics on error
-func MustMarshalDraw(cdc codec.BinaryMarshaler, draw Draw) []byte {
-	bz, err := MarshalDraw(cdc, draw)
+// MustUnmarshalDraw unmarshals the given byte slice into a time.Time object
+func MustUnmarshalDrawEndTime(bz []byte) time.Time {
+	date, err := time.Parse(time.RFC3339, string(bz))
 	if err != nil {
 		panic(err)
 	}
-	return bz
-}
-
-// UnmarshalDraw reads the given byte slice as a Draw object
-func UnmarshalDraw(cdc codec.BinaryMarshaler, bz []byte) (Draw, error) {
-	var draw Draw
-	err := cdc.UnmarshalBinaryBare(bz, &draw)
-	return draw, err
-}
-
-// MustUnmarshalDraw unmarshals the given byte slice into a Draw object
-func MustUnmarshalDraw(cdc codec.BinaryMarshaler, bz []byte) Draw {
-	draw, err := UnmarshalDraw(cdc, bz)
-	if err != nil {
-		panic(err)
-	}
-
-	return draw
+	return date
 }
 
 // ------------------------------------------------------------------------------------------------------------------
 
 // NewHistoricalDrawData creates a new HistoricalDrawData
-func NewHistoricalDrawData(draw Draw, winningTicket *Ticket) HistoricalDrawData {
+func NewHistoricalDrawData(draw Draw, winningTicket Ticket) HistoricalDrawData {
 	return HistoricalDrawData{
 		Draw:          draw,
 		WinningTicket: winningTicket,
@@ -164,11 +140,9 @@ func (h *HistoricalDrawData) Validate() error {
 		return err
 	}
 
-	if h.WinningTicket != nil {
-		err = h.WinningTicket.Validate()
-		if err != nil {
-			return err
-		}
+	err = h.WinningTicket.Validate()
+	if err != nil {
+		return err
 	}
 
 	return nil

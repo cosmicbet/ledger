@@ -20,9 +20,9 @@ const (
 )
 
 var (
-	CurrentDrawStoreKey       = []byte{0x1}
-	HistoricalDrawStorePrefix = []byte("historical_draw")
-	TicketsStorePrefix        = []byte("wta_tickets")
+	CurrentDrawEndTimeStoreKey = []byte{0x1}
+	HistoricalDrawStorePrefix  = []byte("historical_draw")
+	TicketsStorePrefix         = []byte("ticket")
 )
 
 // TicketsStoreKey returns the store key used to save the ticket with the given id

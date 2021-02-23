@@ -21,12 +21,7 @@ func TestDecodeStore(t *testing.T) {
 	cdc := encodingCfg.Marshaler
 	dec := simulation.NewDecodeStore(cdc)
 
-	draw := types.NewDraw(
-		1,
-		1,
-		sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)),
-		time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-	)
+	drawEndTime := time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC)
 
 	ticket := types.NewTicket(
 		"ticket-1",
@@ -41,17 +36,17 @@ func TestDecodeStore(t *testing.T) {
 			sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)),
 			time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 		),
-		&types.Ticket{
-			Id:        "ticket-n",
-			Owner:     "owner-n",
-			Timestamp: time.Date(2020, 1, 5, 00, 00, 00, 000, time.UTC),
-		},
+		types.NewTicket(
+			"ticket-n",
+			time.Date(2020, 1, 5, 00, 00, 00, 000, time.UTC),
+			"owner-n",
+		),
 	)
 
 	kvPairs := kv.Pairs{Pairs: []kv.Pair{
 		{
-			Key:   types.CurrentDrawStoreKey,
-			Value: cdc.MustMarshalBinaryBare(&draw),
+			Key:   types.CurrentDrawEndTimeStoreKey,
+			Value: types.MustMarshalDrawEndTime(drawEndTime),
 		},
 		{
 			Key:   types.TicketsStoreKey(ticket.Id),
@@ -67,7 +62,8 @@ func TestDecodeStore(t *testing.T) {
 		name        string
 		expectedLog string
 	}{
-		{"Draw", fmt.Sprintf("CurrentDrawA: %s\nCurrentDrawB: %s\n", &draw, &draw)},
+		{"Draw end time", fmt.Sprintf("CurrentDrawEndTimeA: %s\nCurrentDrawEndTimeB: %s\n",
+			drawEndTime.Format(time.RFC3339), drawEndTime.Format(time.RFC3339))},
 		{"Ticket", fmt.Sprintf("TicketA: %s\nTicketB: %s\n", &ticket, &ticket)},
 		{"Historical draw", fmt.Sprintf("HistoricalDataA: %s\nHistoricalDataB: %s\n", &historicalDraw, &historicalDraw)},
 		{"other", ""},
