@@ -64,8 +64,8 @@ func (suite *KeeperTestSuite) Test_GetDrawParticipantsAndTicketsSold() {
 	usecases := []struct {
 		name            string
 		tickets         []types.Ticket
-		expParticipants uint32
-		expTicketsSold  uint32
+		expParticipants []string
+		exptTicketsLen  int
 	}{
 		{
 			name: "multiple ticket from same participant",
@@ -86,8 +86,10 @@ func (suite *KeeperTestSuite) Test_GetDrawParticipantsAndTicketsSold() {
 					"owner-1",
 				),
 			},
-			expParticipants: 1,
-			expTicketsSold:  3,
+			expParticipants: []string{
+				"owner-1",
+			},
+			exptTicketsLen: 3,
 		},
 		{
 			name: "multiple tickets from multiple participants",
@@ -123,8 +125,12 @@ func (suite *KeeperTestSuite) Test_GetDrawParticipantsAndTicketsSold() {
 					"owner-3",
 				),
 			},
-			expParticipants: 3,
-			expTicketsSold:  6,
+			expParticipants: []string{
+				"owner-1",
+				"owner-2",
+				"owner-3",
+			},
+			exptTicketsLen: 6,
 		},
 	}
 
@@ -133,9 +139,9 @@ func (suite *KeeperTestSuite) Test_GetDrawParticipantsAndTicketsSold() {
 		suite.Run(uc.name, func() {
 			suite.keeper.SaveTickets(suite.ctx, uc.tickets)
 
-			participants, ticketsSold := suite.keeper.GetDrawParticipantsAndTicketsSold(suite.ctx)
+			participants, ticketsSold := suite.keeper.GetDrawParticipantsAndTickets(suite.ctx)
 			suite.Require().Equal(uc.expParticipants, participants)
-			suite.Require().Equal(uc.expTicketsSold, ticketsSold)
+			suite.Require().Len(ticketsSold, uc.exptTicketsLen)
 		})
 	}
 }

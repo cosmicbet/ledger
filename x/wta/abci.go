@@ -20,9 +20,10 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		return
 	}
 
-	tickets := k.GetTickets(ctx)
+	participants, tickets := k.GetDrawParticipantsAndTickets(ctx)
 
-	if len(tickets) > 0 {
+	// We need at least two participants to make it fair
+	if len(participants) > 2 {
 
 		// Get a random winning ticket
 		r := types.NewRandFromCtx(ctx)
@@ -49,10 +50,10 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 		// Save the past draw
 		k.SaveHistoricalDraw(ctx, types.NewHistoricalDrawData(draw, winningTicket))
-	}
 
-	// Remove all the tickets
-	k.WipeCurrentTickets(ctx)
+		// Remove all the tickets
+		k.WipeCurrentTickets(ctx)
+	}
 
 	// Create a new draw
 	endTime := ctx.BlockTime().Add(k.GetParams(ctx).DrawDuration)

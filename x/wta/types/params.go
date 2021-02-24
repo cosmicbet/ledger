@@ -115,14 +115,14 @@ func ValidatePercentageValue(i interface{}) error {
 
 // ValidateDurationValue validates a duration value making sure it's not zero
 func ValidateDurationValue(i interface{}) error {
-	params, isCorrectParam := i.(time.Duration)
+	duration, isCorrectParam := i.(time.Duration)
 
 	if !isCorrectParam {
 		return fmt.Errorf("invalid parameters type: %s", i)
 	}
 
-	if params == 0 {
-		return fmt.Errorf("invalid draw duration param: %s", params)
+	if duration == 0 || duration < time.Minute {
+		return fmt.Errorf("invalid draw duration param: %s", duration)
 	}
 
 	return nil
@@ -130,14 +130,18 @@ func ValidateDurationValue(i interface{}) error {
 
 // ValidateTicketPriceValue validates a ticket price value
 func ValidateTicketPriceValue(i interface{}) error {
-	params, isCorrectParam := i.(sdk.Coin)
+	price, isCorrectParam := i.(sdk.Coin)
 
 	if !isCorrectParam {
 		return fmt.Errorf("invalid parameters type: %s", i)
 	}
 
-	if err := params.Validate(); err != nil {
+	if err := price.Validate(); err != nil {
 		return fmt.Errorf("invalid ticket price param: %s", err.Error())
+	}
+
+	if price.IsZero() {
+		return fmt.Errorf("ticket price cannot be zero")
 	}
 
 	return nil

@@ -11,6 +11,9 @@ The remaining 2% of income generated thought the sale of tickets will be used as
 - 1% sent to the community pool, to fund for future developments
 - 1% burnt
 
+**Note**  
+Draws will be held only if there are **at least 2 participants** that have entered it. If a draw expires and not enough participants have previously entered, the bough tickets will be considered valid for the next draw. This continues until a valid draw with at least 2 participants is held, without a limit on the number of invalid draws that can happen.
+
 ## Tickets
 In order to obtain a ticket, a user will have to pay using the chain token `FCHS`. A single ticket will have an initial cost of `10 FCHS`.
 

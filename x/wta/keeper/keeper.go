@@ -136,8 +136,8 @@ func (k Keeper) GetCurrentDraw(ctx sdk.Context) types.Draw {
 	acc := authtypes.NewModuleAddress(types.PrizeCollectorName)
 	prize := k.bk.GetAllBalances(ctx, acc)
 
-	participants, ticketsSold := k.GetDrawParticipantsAndTicketsSold(ctx)
-	return types.NewDraw(participants, ticketsSold, prize, endTime)
+	participants, ticketsSold := k.GetDrawParticipantsAndTickets(ctx)
+	return types.NewDraw(uint32(len(participants)), uint32(len(ticketsSold)), prize, endTime)
 }
 
 // ------------------------------------------------------------------------------------------------------------------
