@@ -1,7 +1,5 @@
 package params
 
-// DONTCOVER
-
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"

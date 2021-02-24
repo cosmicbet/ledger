@@ -1,7 +1,5 @@
 package app
 
-// DONTCOVER
-
 import (
 	"github.com/cosmos/cosmos-sdk/std"
 
