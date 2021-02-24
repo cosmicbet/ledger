@@ -28,7 +28,7 @@ func DefaultGenesisState() *GenesisState {
 // ValidateGenesis validates the given genesis state and returns an error if something is invalid
 func ValidateGenesis(state *GenesisState) error {
 	// Validate the draw
-	if state.DrawEndTime.IsZero() {
+	if state.DrawEndTime.IsZero() || time.Now().After(state.DrawEndTime) {
 		return fmt.Errorf("invalid draw end time: %s", state.DrawEndTime.Format(time.RFC3339))
 	}
 

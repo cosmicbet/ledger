@@ -73,6 +73,13 @@ func (k Keeper) WithdrawTicketsCost(ctx sdk.Context, quantity uint32, buyer sdk.
 		return err
 	}
 
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypePrizeIncrease,
+			sdk.NewAttribute(types.AttributeKeyPrizeAmount, prizeAmount.String()),
+		),
+	)
+
 	// Send the pool amount to the community pool
 	poolAmount := sdk.NewCoin(ticketsTotal.Denom, ticketsTotal.Amount.Mul(params.CommunityPoolPercentage).QuoRaw(100))
 	err = k.dk.FundCommunityPool(ctx, sdk.NewCoins(poolAmount), buyer)

@@ -27,7 +27,7 @@ func (t *Ticket) Validate() error {
 		return fmt.Errorf("invalid ticket creation time: %s", t.Timestamp.Format(time.RFC3339))
 	}
 
-	if t.Owner == "" {
+	if _, err := sdk.AccAddressFromBech32(t.Owner); err != nil {
 		return fmt.Errorf("invalid ticket owner: %s", t.Owner)
 	}
 
@@ -90,6 +90,10 @@ func NewDraw(participants, ticketsSold uint32, prize sdk.Coins, endTime time.Tim
 
 // Validate returns an error if there is something wrong with the provided Draw
 func (d Draw) Validate() error {
+	if d.TicketsSold < d.Participants {
+		return fmt.Errorf("tickets sold cannot be less then the participants")
+	}
+
 	err := d.Prize.Validate()
 	if err != nil {
 		return err

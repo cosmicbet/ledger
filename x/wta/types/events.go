@@ -1,5 +1,7 @@
 package types
 
+// DONTCOVER
+
 const (
 	EventTypeBuyTicket     = "buy_ticket"
 	EventTypePrizeIncrease = "prize_increase"
