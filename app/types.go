@@ -1,5 +1,7 @@
 package app
 
+// DONTCOVER
+
 import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
