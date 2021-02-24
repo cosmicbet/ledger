@@ -42,7 +42,8 @@ message QueryTicketsRequest {
 
 // QueryTicketsResponse is the response type for the Query/Tickets RPC method
 message QueryTicketsResponse {
-  cosmicbet.wta.v1beta1.Tickets tickets = 1 [ (gogoproto.nullable) = false ];
+  repeated cosmicbet.wta.v1beta1.Ticket tickets = 1
+      [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -67,7 +68,7 @@ message QueryPastDrawsRequest {
 // QueryPastDrawsResponse is the response type for the Query/PastDraws RPC
 // method
 message QueryPastDrawsResponse {
-  cosmicbet.wta.v1beta1.HistoricalDrawsData draws = 1
+  repeated cosmicbet.wta.v1beta1.HistoricalDrawData draws = 1
       [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

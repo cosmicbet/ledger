@@ -27,12 +27,16 @@ func NewQuerierImpl(k Keeper) types.QueryServer {
 
 // Tickets queries all tickets for the next draw
 func (k querier) Tickets(ctx context.Context, req *types.QueryTicketsRequest) (*types.QueryTicketsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	store := sdkCtx.KVStore(k.storeKey)
 	ticketsStore := prefix.NewStore(store, types.TicketsStorePrefix)
 
-	var tickets types.Tickets
+	var tickets []types.Ticket
 	pageRes, err := query.FilteredPaginate(ticketsStore, req.Pagination, func(_ []byte, value []byte, accumulate bool) (bool, error) {
 		ticket, err := types.UnmarshalTicket(k.cdc, value)
 		if err != nil {
@@ -40,7 +44,7 @@ func (k querier) Tickets(ctx context.Context, req *types.QueryTicketsRequest) (*
 		}
 
 		if accumulate {
-			tickets.Tickets = append(tickets.Tickets, ticket)
+			tickets = append(tickets, ticket)
 		}
 
 		return true, nil
@@ -54,7 +58,11 @@ func (k querier) Tickets(ctx context.Context, req *types.QueryTicketsRequest) (*
 }
 
 // NextDraw queries the details of the next draw
-func (k querier) NextDraw(ctx context.Context, _ *types.QueryNextDrawRequest) (*types.QueryNextDrawResponse, error) {
+func (k querier) NextDraw(ctx context.Context, req *types.QueryNextDrawRequest) (*types.QueryNextDrawResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	draw := k.GetCurrentDraw(sdkCtx)
 	return &types.QueryNextDrawResponse{Draw: draw}, nil
@@ -62,12 +70,16 @@ func (k querier) NextDraw(ctx context.Context, _ *types.QueryNextDrawRequest) (*
 
 // PastDraws queries the details of the past draws
 func (k querier) PastDraws(ctx context.Context, req *types.QueryPastDrawsRequest) (*types.QueryPastDrawsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	store := sdkCtx.KVStore(k.storeKey)
 	drawsStore := prefix.NewStore(store, types.HistoricalDrawStorePrefix)
 
-	var draws types.HistoricalDrawsData
+	var draws []types.HistoricalDrawData
 	pageRes, err := query.FilteredPaginate(drawsStore, req.Pagination, func(_ []byte, value []byte, accumulate bool) (bool, error) {
 		data, err := types.UnmarshalHistoricalDraw(k.cdc, value)
 		if err != nil {
@@ -75,7 +87,7 @@ func (k querier) PastDraws(ctx context.Context, req *types.QueryPastDrawsRequest
 		}
 
 		if accumulate {
-			draws.Draws = append(draws.Draws, data)
+			draws = append(draws, data)
 		}
 
 		return true, nil
@@ -89,7 +101,11 @@ func (k querier) PastDraws(ctx context.Context, req *types.QueryPastDrawsRequest
 }
 
 // Params queries the currently stored parameters
-func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (k Keeper) Params(ctx context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	params := k.GetParams(sdkCtx)
 	return &types.QueryParamsResponse{Params: params}, nil

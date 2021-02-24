@@ -10,7 +10,7 @@ import (
 func (k Keeper) IterateTickets(ctx sdk.Context, fn func(index int64, ticket types.Ticket) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStoreReversePrefixIterator(store, types.TicketsStorePrefix)
+	iterator := sdk.KVStorePrefixIterator(store, types.TicketsStorePrefix)
 	defer iterator.Close()
 
 	i := int64(0)
@@ -56,7 +56,7 @@ func (k Keeper) GetDrawParticipantsAndTicketsSold(ctx sdk.Context) (participants
 func (k Keeper) IterateHistoricalDrawsData(ctx sdk.Context, fn func(index int64, data types.HistoricalDrawData) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStoreReversePrefixIterator(store, types.HistoricalDrawStorePrefix)
+	iterator := sdk.KVStorePrefixIterator(store, types.HistoricalDrawStorePrefix)
 	defer iterator.Close()
 
 	i := int64(0)

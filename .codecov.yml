@@ -13,9 +13,6 @@ coverage:
     project:
       default:
         threshold: 1% # allow this much decrease on project
-      app:
-        target: 70%
-        flags: app
       modules:
         target: 70%
         flags: modules
@@ -29,9 +26,6 @@ comment:
   require_changes: true
 
 flags:
-  app:
-    paths:
-      - "app/"
   modules:
     paths:
       - "x/"
@@ -47,6 +41,7 @@ ignore:
   - "*.rst"
   - "**/*.pb.go"
   - "**/*.pb.gw.go"
+  - "app/"
   - "types/*.pb.go"
   - "tests/*"
   - "tests/**/*"

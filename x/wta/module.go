@@ -63,8 +63,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEncodi
 }
 
 // RegisterRESTRoutes registers the REST routes for the wta module.
-func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
-	// rest.RegisterRoutes(clientCtx, rtr)
+func (AppModuleBasic) RegisterRESTRoutes(client.Context, *mux.Router) {
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the wta module.
@@ -121,8 +120,7 @@ func (AppModule) Name() string {
 }
 
 // RegisterInvariants performs a no-op.
-func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
-	keeper.RegisterInvariants(ir, am.keeper)
+func (am AppModule) RegisterInvariants(sdk.InvariantRegistry) {
 }
 
 // Route returns the message routing key for the wta module.
@@ -141,9 +139,8 @@ func (am AppModule) QuerierRoute() string {
 }
 
 // NewQuerierHandler returns the wta module sdk.querier.
-func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
+func (am AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
 	return nil
-	// return keeper.NewQuerierImpl(am.keeper, legacyQuerierCdc)
 }
 
 // InitGenesis performs genesis initialization for the wta module.

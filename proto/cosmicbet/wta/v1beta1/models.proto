@@ -18,11 +18,6 @@ message Ticket {
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }
 
-// Tickets represents a slice of ticket objects
-message Tickets {
-  repeated Ticket tickets = 1 [ (gogoproto.nullable) = false ];
-}
-
 // Draw contains the data of the next planned draw
 message Draw {
   uint32 participants = 1;
@@ -39,9 +34,4 @@ message Draw {
 message HistoricalDrawData {
   Draw draw = 1 [ (gogoproto.nullable) = false ];
   Ticket winning_ticket = 2 [(gogoproto.nullable) = false];
-}
-
-// HistoricalDrawsData represents a slice of past draws data
-message HistoricalDrawsData {
-  repeated HistoricalDrawData draws = 1 [ (gogoproto.nullable) = false ];
 }
