@@ -30,8 +30,9 @@ func RandHexString(r *rand.Rand, length int) string {
 	return string(b)
 }
 
-func RandCoint(r *rand.Rand, amountLimit int64) sdk.Coin {
-	return sdk.NewCoin(sdk.DefaultBondDenom, simtypes.RandomAmount(r, sdk.NewInt(amountLimit)))
+func RandCoin(r *rand.Rand, amountLimit int64) sdk.Coin {
+	amt, _ := simtypes.RandPositiveInt(r, sdk.NewInt(amountLimit))
+	return sdk.NewCoin(sdk.DefaultBondDenom, amt)
 }
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ func RandomDraw(r *rand.Rand, limitTime time.Time) types.Draw {
 	return types.NewDraw(
 		r.Uint32(),
 		r.Uint32(),
-		sdk.NewCoins(RandCoint(r, 1000000)),
+		sdk.NewCoins(RandCoin(r, 1000000)),
 		RandDate(r, limitTime),
 	)
 }
@@ -98,7 +99,7 @@ func RandomParams(r *rand.Rand) types.Params {
 		sdk.NewInt(prizePercentage),
 		sdk.NewInt(poolPercentage),
 		sdk.NewInt(burnPercentage),
-		time.Second*time.Duration(r.Int63n(60)+30), // Minimum 30 seconds
-		RandCoint(r, 1000),
+		time.Minute*time.Duration(r.Int63n(3)+1), // Minimum 1 minute, max 3 minutes
+		RandCoin(r, 1000),
 	)
 }
