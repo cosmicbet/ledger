@@ -1,9 +1,11 @@
 package types_test
 
 import (
-	"github.com/cosmicbet/ledger/x/wta/types"
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/cosmicbet/ledger/x/wta/types"
 )
 
 func TestMsgBuyTickets_ValidateBasic(t *testing.T) {

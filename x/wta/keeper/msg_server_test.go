@@ -1,11 +1,13 @@
 package keeper_test
 
 import (
-	"github.com/cosmicbet/ledger/x/wta/keeper"
-	"github.com/cosmicbet/ledger/x/wta/types"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"time"
+
+	"github.com/cosmicbet/ledger/x/wta/keeper"
+	"github.com/cosmicbet/ledger/x/wta/types"
 )
 
 func (suite *KeeperTestSuite) Test_MsgServer_BuyTickets() {

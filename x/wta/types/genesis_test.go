@@ -1,11 +1,13 @@
 package types_test
 
 import (
-	"github.com/cosmicbet/ledger/x/wta/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	"github.com/cosmicbet/ledger/x/wta/types"
 )
 
 func TestValidateGenesis(t *testing.T) {
