@@ -23,7 +23,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	participants, tickets := k.GetDrawParticipantsAndTickets(ctx)
 
 	// We need at least two participants to make it fair
-	if len(participants) > 2 {
+	if len(participants) > 1 {
 
 		// Get a random winning ticket
 		r := types.NewRandFromCtx(ctx)
