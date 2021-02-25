@@ -9,138 +9,146 @@ import (
 )
 
 const (
-	// Default params space for the params keeper
-	DefaultParamSpace = ModuleName
+	// Default draw duration
+	DefaultDrawDuration = time.Hour
+
+	// Min draw duration
+	MinDrawDuration = time.Minute
+)
+
+// Default wta params
+var (
+	DefaultPrizePercentage = sdk.NewDecWithPrec(98, 2)                                           // 98%
+	DefaultBurnPercentage  = sdk.NewDecWithPrec(1, 2)                                            // 1%
+	DefaultFeePercentage   = sdk.NewDecWithPrec(1, 2)                                            // 1%
+	DefaultTicketPrice     = sdk.NewCoin(sdk.DefaultBondDenom, sdk.TokensFromConsensusPower(10)) // 10 Tokens
 )
 
 // Parameters store keys
 var (
-	PrizePercentageParamKey         = []byte("PrizePercentage")
-	CommunityPoolPercentageParamKey = []byte("CommunityPoolPercentage")
-	BurnPercentageParamKey          = []byte("BurnPercentage")
-	DrawDurationParamKey            = []byte("DrawDuration")
-	TicketPriceParamKey             = []byte("TicketPrice")
+	ParamStoreDistributionParamsKey = []byte("DistributionParams")
+	ParamStoreDrawParamsKey         = []byte("DrawParams")
+	ParamStoreTicketParamsKey       = []byte("TicketParams")
 )
 
 // ParamKeyTable Key declaration for parameters
 func ParamKeyTable() paramstypes.KeyTable {
-	return paramstypes.NewKeyTable().RegisterParamSet(&Params{})
+	return paramstypes.NewKeyTable(
+		paramstypes.NewParamSetPair(ParamStoreDistributionParamsKey, &DistributionParams{}, ValidateDistributionParams),
+		paramstypes.NewParamSetPair(ParamStoreDrawParamsKey, &DrawParams{}, ValidateDrawParams),
+		paramstypes.NewParamSetPair(ParamStoreTicketParamsKey, &TicketParams{}, ValidateTicketParams),
+	)
 }
 
-// NewParams creates a new Params object
-func NewParams(
-	prizePercentage, communityPoolPercentage, burnPercentage sdk.Int,
-	drawDuration time.Duration, ticketPrice sdk.Coin,
-) Params {
-	return Params{
-		PrizePercentage:         prizePercentage,
-		CommunityPoolPercentage: communityPoolPercentage,
-		BurnPercentage:          burnPercentage,
-		DrawDuration:            drawDuration,
-		TicketPrice:             ticketPrice,
-	}
-}
+// -------------------------------------------------------------------------------------------------------------------
 
-// DefaultParams return default params object
-func DefaultParams() Params {
-	return Params{
-		PrizePercentage:         sdk.NewInt(98),
-		CommunityPoolPercentage: sdk.NewInt(1),
-		BurnPercentage:          sdk.NewInt(1),
-		DrawDuration:            time.Hour * 24,
-		TicketPrice:             sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10000000)),
+func NewDistributionParams(prizePercentage, feePercentage, burnPercentage sdk.Dec) DistributionParams {
+	return DistributionParams{
+		PrizePercentage: prizePercentage,
+		FeePercentage:   feePercentage,
+		BurnPercentage:  burnPercentage,
 	}
 }
 
-// ParamSetPairs implements the ParamSet interface and returns the key/value pairs
-// of posts module's parameters.
-func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
-	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(PrizePercentageParamKey, &params.PrizePercentage, ValidatePercentageValue),
-		paramstypes.NewParamSetPair(CommunityPoolPercentageParamKey, &params.CommunityPoolPercentage, ValidatePercentageValue),
-		paramstypes.NewParamSetPair(BurnPercentageParamKey, &params.BurnPercentage, ValidatePercentageValue),
-		paramstypes.NewParamSetPair(DrawDurationParamKey, &params.DrawDuration, ValidateDurationValue),
-		paramstypes.NewParamSetPair(TicketPriceParamKey, &params.TicketPrice, ValidateTicketPriceValue),
-	}
+func DefaultDistributionParams() DistributionParams {
+	return NewDistributionParams(
+		DefaultPrizePercentage,
+		DefaultBurnPercentage,
+		DefaultFeePercentage,
+	)
 }
 
-// Validate perform basic checks on all parameters to ensure they are correct
-func (params Params) Validate() error {
-	err := ValidatePercentageValue(params.PrizePercentage)
+func ValidateDistributionParams(i interface{}) error {
+	params, ok := i.(DistributionParams)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	err := validatePercentageValue(params.PrizePercentage)
 	if err != nil {
 		return err
 	}
 
-	err = ValidatePercentageValue(params.CommunityPoolPercentage)
+	err = validatePercentageValue(params.FeePercentage)
 	if err != nil {
 		return err
 	}
 
-	err = ValidatePercentageValue(params.BurnPercentage)
+	err = validatePercentageValue(params.BurnPercentage)
 	if err != nil {
 		return err
 	}
 
-	if !params.PrizePercentage.Add(params.CommunityPoolPercentage).Add(params.BurnPercentage).Equal(sdk.NewInt(100)) {
-		return fmt.Errorf("percentages does not sum to 100")
-	}
-
-	err = ValidateDurationValue(params.DrawDuration)
-	if err != nil {
-		return err
-	}
-
-	err = ValidateTicketPriceValue(params.TicketPrice)
-	if err != nil {
-		return err
+	if !params.PrizePercentage.Add(params.FeePercentage).Add(params.BurnPercentage).Equal(sdk.NewDecWithPrec(100, 2)) {
+		return fmt.Errorf("percentages does not sum to 1.00")
 	}
 
 	return nil
 }
 
-// ValidatePercentageValue validates a percentage value making sure it's not negative or exceeding 100
-func ValidatePercentageValue(i interface{}) error {
-	params, isCorrectParam := i.(sdk.Int)
+// validatePercentageValue validates a percentage value making sure it's not negative or exceeding 100
+func validatePercentageValue(i interface{}) error {
+	params, isCorrectParam := i.(sdk.Dec)
 
 	if !isCorrectParam {
 		return fmt.Errorf("invalid parameters type: %s", i)
 	}
 
-	if params.IsZero() || params.IsNegative() || params.GT(sdk.NewInt(100)) {
+	if params.IsZero() || params.IsNegative() || params.GT(sdk.NewDecWithPrec(100, 2)) {
 		return fmt.Errorf("invalid percentage value: %s", params)
 	}
 
 	return nil
 }
 
-// ValidateDurationValue validates a duration value making sure it's not zero
-func ValidateDurationValue(i interface{}) error {
-	duration, isCorrectParam := i.(time.Duration)
+// -------------------------------------------------------------------------------------------------------------------
 
-	if !isCorrectParam {
-		return fmt.Errorf("invalid parameters type: %s", i)
+func NewDrawParams(duration time.Duration) DrawParams {
+	return DrawParams{
+		Duration: duration,
+	}
+}
+
+func DefaultDrawParams() DrawParams {
+	return NewDrawParams(DefaultDrawDuration)
+}
+
+func ValidateDrawParams(i interface{}) error {
+	params, ok := i.(DrawParams)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if duration == 0 || duration < time.Minute {
-		return fmt.Errorf("invalid draw duration param: %s", duration)
+	if params.Duration == 0 || params.Duration < MinDrawDuration {
+		return fmt.Errorf("invalid draw duration param: %s", params.Duration)
 	}
 
 	return nil
 }
 
-// ValidateTicketPriceValue validates a ticket price value
-func ValidateTicketPriceValue(i interface{}) error {
-	price, isCorrectParam := i.(sdk.Coin)
+// -------------------------------------------------------------------------------------------------------------------
 
-	if !isCorrectParam {
-		return fmt.Errorf("invalid parameters type: %s", i)
+func NewTicketParams(price sdk.Coin) TicketParams {
+	return TicketParams{
+		Price: price,
+	}
+}
+
+func DefaultTicketParams() TicketParams {
+	return NewTicketParams(DefaultTicketPrice)
+}
+
+func ValidateTicketParams(i interface{}) error {
+	params, ok := i.(TicketParams)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if err := price.Validate(); err != nil {
+	if err := params.Price.Validate(); err != nil {
 		return fmt.Errorf("invalid ticket price param: %s", err.Error())
 	}
 
-	if price.IsZero() {
+	if params.Price.IsZero() {
 		return fmt.Errorf("ticket price cannot be zero")
 	}
 

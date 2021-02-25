@@ -8,7 +8,7 @@ In order to take part to a draw, users will have to buy one or more tickets befo
 For each draw, there will only be a single winning ticket drawn. The prize of each draw will be 98% of the earnings from ticket sales.
 
 The remaining 2% of income generated thought the sale of tickets will be used as follows:
-- 1% sent to the community pool, to fund for future developments
+- 1% sent to the fee pool
 - 1% burnt
 
 **Note**  

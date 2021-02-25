@@ -6,12 +6,17 @@ import (
 )
 
 // NewGenesisState returns a new GenesisState containing the provided data
-func NewGenesisState(drawEndTime time.Time, tickets []Ticket, pastDraws []HistoricalDrawData, params Params) *GenesisState {
+func NewGenesisState(
+	drawEndTime time.Time, tickets []Ticket, pastDraws []HistoricalDrawData,
+	distributionParams DistributionParams, drawParams DrawParams, ticketParams TicketParams,
+) *GenesisState {
 	return &GenesisState{
-		DrawEndTime: drawEndTime,
-		Tickets:     tickets,
-		PastDraws:   pastDraws,
-		Params:      params,
+		DrawEndTime:        drawEndTime,
+		Tickets:            tickets,
+		PastDraws:          pastDraws,
+		DistributionParams: distributionParams,
+		DrawParams:         drawParams,
+		TicketParams:       ticketParams,
 	}
 }
 
@@ -21,7 +26,9 @@ func DefaultGenesisState() *GenesisState {
 		time.Now().Add(time.Hour*24),
 		[]Ticket{},
 		[]HistoricalDrawData{},
-		DefaultParams(),
+		DefaultDistributionParams(),
+		DefaultDrawParams(),
+		DefaultTicketParams(),
 	)
 }
 
@@ -64,7 +71,17 @@ func ValidateGenesis(state *GenesisState) error {
 	}
 
 	// Validate the params
-	err := state.Params.Validate()
+	err := ValidateDistributionParams(state.DistributionParams)
+	if err != nil {
+		return err
+	}
+
+	err = ValidateDrawParams(state.DrawParams)
+	if err != nil {
+		return err
+	}
+
+	err = ValidateTicketParams(state.TicketParams)
 	if err != nil {
 		return err
 	}

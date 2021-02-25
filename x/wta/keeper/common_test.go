@@ -114,7 +114,13 @@ func (suite *KeeperTestSuite) SetupTest() {
 	suite.dk.SetFeePool(suite.ctx, distrtypes.InitialFeePool())
 
 	suite.keeper = wtakeeper.NewKeeper(
-		suite.cdc, keys[wtatypes.StoreKey], suite.pk.Subspace(wtatypes.DefaultParamSpace), suite.ak, suite.bk, suite.dk,
+		suite.cdc,
+		keys[wtatypes.StoreKey],
+		suite.pk.Subspace(wtatypes.ModuleName),
+		suite.ak,
+		suite.bk,
+		suite.dk,
+		authtypes.FeeCollectorName,
 	)
 }
 

@@ -15,35 +15,24 @@ import (
 
 // ParamChanges returns a randomly generated set or parameter changes
 func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
-	params := RandomParams(r)
-
 	return []simtypes.ParamChange{
-		simulation.NewSimParamChange(types.ModuleName, string(types.PrizePercentageParamKey),
+		simulation.NewSimParamChange(types.ModuleName, string(types.ParamStoreDistributionParamsKey),
 			func(r *rand.Rand) string {
-				return fmt.Sprintf(`"%s"`, params.PrizePercentage)
+				params := RandomDistributionParams(r)
+				bz, _ := json.Marshal(&params)
+				return string(bz)
 			},
 		),
-		simulation.NewSimParamChange(types.ModuleName, string(types.CommunityPoolPercentageParamKey),
+		simulation.NewSimParamChange(types.ModuleName, string(types.ParamStoreDrawParamsKey),
 			func(r *rand.Rand) string {
-				return fmt.Sprintf(`"%s"`, params.CommunityPoolPercentage)
+				params := RandomDrawParams(r)
+				return fmt.Sprintf(`{"duration":"%d"}`, params.Duration)
 			},
 		),
-		simulation.NewSimParamChange(types.ModuleName, string(types.BurnPercentageParamKey),
+		simulation.NewSimParamChange(types.ModuleName, string(types.ParamStoreTicketParamsKey),
 			func(r *rand.Rand) string {
-				return fmt.Sprintf(`"%s"`, params.BurnPercentage)
-			},
-		),
-		simulation.NewSimParamChange(types.ModuleName, string(types.DrawDurationParamKey),
-			func(r *rand.Rand) string {
-				return fmt.Sprintf(`"%d"`, params.DrawDuration)
-			},
-		),
-		simulation.NewSimParamChange(types.ModuleName, string(types.TicketPriceParamKey),
-			func(r *rand.Rand) string {
-				bz, err := json.Marshal(params.TicketPrice)
-				if err != nil {
-					panic(err)
-				}
+				params := RandomTicketParams(r)
+				bz, _ := json.Marshal(&params)
 				return string(bz)
 			},
 		),

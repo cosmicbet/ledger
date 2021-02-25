@@ -80,5 +80,10 @@ message QueryParamsRequest {}
 
 // QueryParamsResponse is the response type for the Query/Params RPC method
 message QueryParamsResponse {
-  cosmicbet.wta.v1beta1.Params params = 1 [ (gogoproto.nullable) = false ];
+  // Represents the parameters related to the prize distribution
+  DistributionParams distribution_params = 1 [ (gogoproto.nullable) = false ];
+  // Represents the parameters related to each draw
+  DrawParams draw_params = 2 [ (gogoproto.nullable) = false ];
+  // Represents the parameters related to each ticket
+  TicketParams ticket_params = 3 [ (gogoproto.nullable) = false ];
 }

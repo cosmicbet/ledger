@@ -87,8 +87,8 @@ func randomBuyTicketsData(
 	ticketsAmt = uint32(r.Int31n(10)) + 1
 
 	// Compute the ticket cost based on the params
-	wtaParams := k.GetParams(ctx)
-	ticketsCost = sdk.NewCoin(wtaParams.TicketPrice.Denom, wtaParams.TicketPrice.Amount.MulRaw(int64(ticketsAmt)))
+	ticketParams := k.GetTicketParams(ctx)
+	ticketsCost = sdk.NewCoin(ticketParams.Price.Denom, ticketParams.Price.Amount.MulRaw(int64(ticketsAmt)))
 
 	// Make sure the account has enough balance to pay for the tickets
 	balance := bk.SpendableCoins(ctx, account.Address)

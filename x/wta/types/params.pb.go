@@ -29,35 +29,31 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// Params contains the module parameters
-type Params struct {
-	// Percentage of the ticket cost that should be sent to the prize pool (out of
-	// 100)
-	PrizePercentage github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=prize_percentage,json=prizePercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"prize_percentage"`
-	// Percentage of the ticket cost that should be sent to the community pool
-	// (out of 100)
-	CommunityPoolPercentage github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=community_pool_percentage,json=communityPoolPercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"community_pool_percentage"`
-	// Percentage of the ticket cost that should be burnt (out of 100)
-	BurnPercentage github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=burn_percentage,json=burnPercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"burn_percentage"`
-	// Duration of each draw, after which the winner is picked and a new draw is
-	// created
-	DrawDuration time.Duration `protobuf:"bytes,4,opt,name=draw_duration,json=drawDuration,proto3,stdduration" json:"draw_duration"`
-	// Cost of an individual ticket
-	TicketPrice types.Coin `protobuf:"bytes,5,opt,name=ticket_price,json=ticketPrice,proto3" json:"ticket_price"`
+// DistributionParams contains the parameters of the distribution of the prize
+type DistributionParams struct {
+	// Percentage of the ticket cost that should be sent to the prize pool,
+	// represented as a value between 0.00 and 1.00.
+	PrizePercentage github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=prize_percentage,json=prizePercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"prize_percentage"`
+	// Percentage of the ticket cost that should be burnt,
+	// represented as a value between 0.00 and 1.00.
+	BurnPercentage github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=burn_percentage,json=burnPercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"burn_percentage"`
+	// Percentage of the ticket cost that should be considered as a fee,
+	// represented as a value between 0.00 and 1.00.
+	FeePercentage github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=fee_percentage,json=feePercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"fee_percentage"`
 }
 
-func (m *Params) Reset()         { *m = Params{} }
-func (m *Params) String() string { return proto.CompactTextString(m) }
-func (*Params) ProtoMessage()    {}
-func (*Params) Descriptor() ([]byte, []int) {
+func (m *DistributionParams) Reset()         { *m = DistributionParams{} }
+func (m *DistributionParams) String() string { return proto.CompactTextString(m) }
+func (*DistributionParams) ProtoMessage()    {}
+func (*DistributionParams) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ce4ff2a375989179, []int{0}
 }
-func (m *Params) XXX_Unmarshal(b []byte) error {
+func (m *DistributionParams) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Params) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *DistributionParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Params.Marshal(b, m, deterministic)
+		return xxx_messageInfo_DistributionParams.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -67,34 +63,115 @@ func (m *Params) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *Params) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Params.Merge(m, src)
+func (m *DistributionParams) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DistributionParams.Merge(m, src)
 }
-func (m *Params) XXX_Size() int {
+func (m *DistributionParams) XXX_Size() int {
 	return m.Size()
 }
-func (m *Params) XXX_DiscardUnknown() {
-	xxx_messageInfo_Params.DiscardUnknown(m)
+func (m *DistributionParams) XXX_DiscardUnknown() {
+	xxx_messageInfo_DistributionParams.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Params proto.InternalMessageInfo
+var xxx_messageInfo_DistributionParams proto.InternalMessageInfo
 
-func (m *Params) GetDrawDuration() time.Duration {
+// DrawParams contain the parameters for each draw
+type DrawParams struct {
+	// Duration of each draw, after which the winner is picked and a new draw is
+	// created
+	Duration time.Duration `protobuf:"bytes,4,opt,name=duration,proto3,stdduration" json:"duration"`
+}
+
+func (m *DrawParams) Reset()         { *m = DrawParams{} }
+func (m *DrawParams) String() string { return proto.CompactTextString(m) }
+func (*DrawParams) ProtoMessage()    {}
+func (*DrawParams) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce4ff2a375989179, []int{1}
+}
+func (m *DrawParams) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DrawParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DrawParams.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DrawParams) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DrawParams.Merge(m, src)
+}
+func (m *DrawParams) XXX_Size() int {
+	return m.Size()
+}
+func (m *DrawParams) XXX_DiscardUnknown() {
+	xxx_messageInfo_DrawParams.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DrawParams proto.InternalMessageInfo
+
+func (m *DrawParams) GetDuration() time.Duration {
 	if m != nil {
-		return m.DrawDuration
+		return m.Duration
 	}
 	return 0
 }
 
-func (m *Params) GetTicketPrice() types.Coin {
+// TicketParams contain the parameters for each ticket
+type TicketParams struct {
+	// Cost of an individual ticket
+	Price types.Coin `protobuf:"bytes,5,opt,name=price,proto3" json:"price"`
+}
+
+func (m *TicketParams) Reset()         { *m = TicketParams{} }
+func (m *TicketParams) String() string { return proto.CompactTextString(m) }
+func (*TicketParams) ProtoMessage()    {}
+func (*TicketParams) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce4ff2a375989179, []int{2}
+}
+func (m *TicketParams) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *TicketParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_TicketParams.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *TicketParams) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TicketParams.Merge(m, src)
+}
+func (m *TicketParams) XXX_Size() int {
+	return m.Size()
+}
+func (m *TicketParams) XXX_DiscardUnknown() {
+	xxx_messageInfo_TicketParams.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TicketParams proto.InternalMessageInfo
+
+func (m *TicketParams) GetPrice() types.Coin {
 	if m != nil {
-		return m.TicketPrice
+		return m.Price
 	}
 	return types.Coin{}
 }
 
 func init() {
-	proto.RegisterType((*Params)(nil), "cosmicbet.wta.v1beta1.Params")
+	proto.RegisterType((*DistributionParams)(nil), "cosmicbet.wta.v1beta1.DistributionParams")
+	proto.RegisterType((*DrawParams)(nil), "cosmicbet.wta.v1beta1.DrawParams")
+	proto.RegisterType((*TicketParams)(nil), "cosmicbet.wta.v1beta1.TicketParams")
 }
 
 func init() {
@@ -102,35 +179,35 @@ func init() {
 }
 
 var fileDescriptor_ce4ff2a375989179 = []byte{
-	// 386 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xbf, 0x8e, 0xd3, 0x30,
-	0x1c, 0xc7, 0x13, 0x5a, 0x2a, 0x48, 0x0b, 0x45, 0x11, 0x88, 0xb6, 0x83, 0x5b, 0x75, 0x80, 0x2e,
-	0xd8, 0x2a, 0x3c, 0x01, 0x81, 0x01, 0xb6, 0xa8, 0x0b, 0x82, 0x25, 0x72, 0x1c, 0x13, 0x4c, 0x93,
-	0xfc, 0x22, 0xc7, 0xa1, 0xf4, 0x9e, 0xe2, 0xc6, 0x7b, 0x92, 0x7b, 0x86, 0x8e, 0x1d, 0x4f, 0x37,
-	0xf4, 0x4e, 0xed, 0x8b, 0x9c, 0x9c, 0x7f, 0x8a, 0x6e, 0xec, 0x14, 0xcb, 0xfa, 0x7d, 0x3f, 0x1f,
-	0x3b, 0x5f, 0x5b, 0x73, 0x06, 0x59, 0x2c, 0x98, 0xcf, 0x15, 0xd9, 0x28, 0x4a, 0xfe, 0x2d, 0x7d,
-	0xae, 0xe8, 0x92, 0xa4, 0x54, 0xd2, 0x38, 0xc3, 0xa9, 0x04, 0x05, 0xf6, 0x9b, 0x66, 0x06, 0x6f,
-	0x14, 0xc5, 0xd5, 0xcc, 0x04, 0x85, 0x00, 0x61, 0xc4, 0x49, 0x31, 0xe4, 0xe7, 0xbf, 0x49, 0x90,
-	0x4b, 0xaa, 0x04, 0x24, 0x65, 0x6c, 0xf2, 0x3a, 0x84, 0x10, 0x8a, 0x25, 0xd1, 0xab, 0x6a, 0x17,
-	0x69, 0x18, 0x64, 0xc4, 0xa7, 0x19, 0x6f, 0x74, 0x0c, 0x44, 0x95, 0x9a, 0x5f, 0x77, 0xac, 0x9e,
-	0x5b, 0xd8, 0xed, 0x9f, 0xd6, 0xab, 0x54, 0x8a, 0x0b, 0xee, 0xa5, 0x5c, 0x32, 0x9e, 0x28, 0x1a,
-	0xf2, 0x91, 0x39, 0x33, 0x17, 0xcf, 0x1d, 0xbc, 0x3b, 0x4c, 0x8d, 0xdb, 0xc3, 0xf4, 0x5d, 0x28,
-	0xd4, 0x9f, 0xdc, 0xc7, 0x0c, 0x62, 0x52, 0x71, 0xcb, 0xcf, 0x87, 0x2c, 0x58, 0x13, 0xb5, 0x4d,
-	0x79, 0x86, 0xbf, 0x27, 0x6a, 0x35, 0x2c, 0x38, 0x6e, 0x83, 0xb1, 0xff, 0x5a, 0x63, 0x06, 0x71,
-	0x9c, 0x27, 0x42, 0x6d, 0xbd, 0x14, 0x20, 0x6a, 0x3b, 0x9e, 0x9c, 0xe5, 0x78, 0xdb, 0x00, 0x5d,
-	0x80, 0xa8, 0xe5, 0xfa, 0x61, 0x0d, 0xfd, 0x5c, 0x26, 0x6d, 0x43, 0xe7, 0x2c, 0xc3, 0x4b, 0x8d,
-	0x69, 0x81, 0xbf, 0x59, 0x2f, 0x02, 0x49, 0x37, 0x5e, 0xfd, 0xdf, 0x47, 0xdd, 0x99, 0xb9, 0xe8,
-	0x7f, 0x1c, 0xe3, 0xb2, 0x18, 0x5c, 0x17, 0x83, 0xbf, 0x56, 0x03, 0xce, 0x33, 0x6d, 0xbc, 0xba,
-	0x9b, 0x9a, 0xab, 0x81, 0x4e, 0xd6, 0xfb, 0xb6, 0x63, 0x0d, 0x94, 0x60, 0x6b, 0xae, 0xbc, 0x54,
-	0x0a, 0xc6, 0x47, 0x4f, 0x2b, 0x50, 0x79, 0x0c, 0xac, 0xbb, 0xaa, 0x6b, 0xc7, 0x5f, 0x40, 0x24,
-	0x4e, 0x57, 0x83, 0x56, 0xfd, 0x32, 0xe4, 0xea, 0x8c, 0xf3, 0x79, 0x77, 0x44, 0xe6, 0xfe, 0x88,
-	0xcc, 0xfb, 0x23, 0x32, 0x2f, 0x4f, 0xc8, 0xd8, 0x9f, 0x90, 0x71, 0x73, 0x42, 0xc6, 0xaf, 0xf7,
-	0x8f, 0xee, 0x57, 0x3e, 0xb7, 0x88, 0x07, 0x21, 0x97, 0xe4, 0x7f, 0xf1, 0xee, 0x8a, 0x4b, 0xfa,
-	0xbd, 0xe2, 0xc4, 0x9f, 0x1e, 0x02, 0x00, 0x00, 0xff, 0xff, 0x21, 0xce, 0x54, 0x8b, 0x95, 0x02,
-	0x00, 0x00,
+	// 387 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0x41, 0x8f, 0xd2, 0x40,
+	0x14, 0xc7, 0x5b, 0x04, 0x83, 0xa3, 0x82, 0x69, 0x34, 0x41, 0x0e, 0x03, 0xe9, 0x41, 0xb9, 0x38,
+	0x13, 0x34, 0x9e, 0x8d, 0xb5, 0x1e, 0x4d, 0x08, 0xd1, 0x18, 0xbd, 0x98, 0x99, 0xe1, 0x51, 0x27,
+	0x40, 0xa7, 0x99, 0x4e, 0x97, 0xdd, 0xfd, 0x14, 0x7b, 0xdc, 0xdb, 0x7e, 0x1d, 0x8e, 0x1c, 0x37,
+	0x7b, 0x60, 0x37, 0xf0, 0x45, 0x36, 0x6d, 0x87, 0x86, 0xdd, 0x23, 0xa7, 0x4e, 0x9a, 0xff, 0xfb,
+	0xbd, 0xff, 0x7b, 0xff, 0x87, 0x7c, 0xa1, 0xd2, 0x85, 0x14, 0x1c, 0x0c, 0x5d, 0x1a, 0x46, 0x4f,
+	0x86, 0x1c, 0x0c, 0x1b, 0xd2, 0x84, 0x69, 0xb6, 0x48, 0x49, 0xa2, 0x95, 0x51, 0xde, 0x9b, 0x4a,
+	0x43, 0x96, 0x86, 0x11, 0xab, 0xe9, 0xe2, 0x48, 0xa9, 0x68, 0x0e, 0xb4, 0x10, 0xf1, 0x6c, 0x4a,
+	0x27, 0x99, 0x66, 0x46, 0xaa, 0xb8, 0x2c, 0xeb, 0xbe, 0x8e, 0x54, 0xa4, 0x8a, 0x27, 0xcd, 0x5f,
+	0xf6, 0x2f, 0xce, 0x61, 0x2a, 0xa5, 0x9c, 0xa5, 0x50, 0xb5, 0x13, 0x4a, 0xda, 0x2a, 0xff, 0xaa,
+	0x86, 0xbc, 0x50, 0xa6, 0x46, 0x4b, 0x9e, 0xe5, 0xb0, 0x51, 0xe1, 0xc4, 0xfb, 0x83, 0x5e, 0x25,
+	0x5a, 0x9e, 0xc3, 0xbf, 0x04, 0xb4, 0x80, 0xd8, 0xb0, 0x08, 0x3a, 0x6e, 0xdf, 0x1d, 0x3c, 0x0b,
+	0xc8, 0x6a, 0xd3, 0x73, 0x6e, 0x36, 0xbd, 0x77, 0x91, 0x34, 0xff, 0x33, 0x4e, 0x84, 0x5a, 0x50,
+	0xdb, 0xa3, 0xfc, 0x7c, 0x48, 0x27, 0x33, 0x6a, 0xce, 0x12, 0x48, 0x49, 0x08, 0x62, 0xdc, 0x2e,
+	0x38, 0xa3, 0x0a, 0xe3, 0xfd, 0x46, 0x6d, 0x9e, 0xe9, 0xf8, 0x90, 0x5c, 0x3b, 0x8a, 0xdc, 0xca,
+	0x31, 0x07, 0xe0, 0x5f, 0xa8, 0x35, 0x85, 0x07, 0x8e, 0x9f, 0x1c, 0xc5, 0x7d, 0x39, 0x85, 0x03,
+	0xbf, 0xfe, 0x0f, 0x84, 0x42, 0xcd, 0x96, 0x76, 0x31, 0x5f, 0x50, 0x73, 0xbf, 0xf7, 0x4e, 0xbd,
+	0xef, 0x0e, 0x9e, 0x7f, 0x7c, 0x4b, 0xca, 0x60, 0xc8, 0x3e, 0x18, 0x12, 0x5a, 0x41, 0xd0, 0xcc,
+	0x3b, 0x5f, 0xde, 0xf6, 0xdc, 0x71, 0x55, 0xe4, 0x7f, 0x47, 0x2f, 0x7e, 0x4a, 0x31, 0x03, 0x63,
+	0x81, 0x9f, 0x51, 0x23, 0xd1, 0x52, 0x40, 0xa7, 0x61, 0x69, 0xa5, 0x27, 0x92, 0x07, 0xb6, 0xcf,
+	0x9e, 0x7c, 0x53, 0x32, 0x0e, 0xea, 0x39, 0x6d, 0x5c, 0xaa, 0x83, 0xaf, 0xab, 0x2d, 0x76, 0xd7,
+	0x5b, 0xec, 0xde, 0x6d, 0xb1, 0x7b, 0xb1, 0xc3, 0xce, 0x7a, 0x87, 0x9d, 0xeb, 0x1d, 0x76, 0xfe,
+	0xbe, 0x7f, 0x34, 0x66, 0x79, 0x6d, 0x73, 0x98, 0x44, 0xa0, 0xe9, 0x69, 0x71, 0x76, 0xc5, 0xac,
+	0xfc, 0x69, 0x61, 0xf8, 0xd3, 0x7d, 0x00, 0x00, 0x00, 0xff, 0xff, 0x24, 0x3d, 0x85, 0xe3, 0x94,
+	0x02, 0x00, 0x00,
 }
 
-func (m *Params) Marshal() (dAtA []byte, err error) {
+func (m *DistributionParams) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -140,38 +217,20 @@ func (m *Params) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Params) MarshalTo(dAtA []byte) (int, error) {
+func (m *DistributionParams) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *DistributionParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.TicketPrice.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
+		size := m.FeePercentage.Size()
 		i -= size
-		i = encodeVarintParams(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x2a
-	n2, err2 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.DrawDuration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.DrawDuration):])
-	if err2 != nil {
-		return 0, err2
-	}
-	i -= n2
-	i = encodeVarintParams(dAtA, i, uint64(n2))
-	i--
-	dAtA[i] = 0x22
-	{
-		size := m.BurnPercentage.Size()
-		i -= size
-		if _, err := m.BurnPercentage.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.FeePercentage.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintParams(dAtA, i, uint64(size))
@@ -179,9 +238,9 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x1a
 	{
-		size := m.CommunityPoolPercentage.Size()
+		size := m.BurnPercentage.Size()
 		i -= size
-		if _, err := m.CommunityPoolPercentage.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.BurnPercentage.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintParams(dAtA, i, uint64(size))
@@ -201,6 +260,70 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *DrawParams) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DrawParams) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DrawParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	n1, err1 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.Duration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.Duration):])
+	if err1 != nil {
+		return 0, err1
+	}
+	i -= n1
+	i = encodeVarintParams(dAtA, i, uint64(n1))
+	i--
+	dAtA[i] = 0x22
+	return len(dAtA) - i, nil
+}
+
+func (m *TicketParams) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *TicketParams) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *TicketParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Price.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintParams(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x2a
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintParams(dAtA []byte, offset int, v uint64) int {
 	offset -= sovParams(v)
 	base := offset
@@ -212,7 +335,7 @@ func encodeVarintParams(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Params) Size() (n int) {
+func (m *DistributionParams) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -220,13 +343,31 @@ func (m *Params) Size() (n int) {
 	_ = l
 	l = m.PrizePercentage.Size()
 	n += 1 + l + sovParams(uint64(l))
-	l = m.CommunityPoolPercentage.Size()
-	n += 1 + l + sovParams(uint64(l))
 	l = m.BurnPercentage.Size()
 	n += 1 + l + sovParams(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.DrawDuration)
+	l = m.FeePercentage.Size()
 	n += 1 + l + sovParams(uint64(l))
-	l = m.TicketPrice.Size()
+	return n
+}
+
+func (m *DrawParams) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.Duration)
+	n += 1 + l + sovParams(uint64(l))
+	return n
+}
+
+func (m *TicketParams) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Price.Size()
 	n += 1 + l + sovParams(uint64(l))
 	return n
 }
@@ -237,7 +378,7 @@ func sovParams(x uint64) (n int) {
 func sozParams(x uint64) (n int) {
 	return sovParams(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *Params) Unmarshal(dAtA []byte) error {
+func (m *DistributionParams) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -260,10 +401,10 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Params: wiretype end group for non-group")
+			return fmt.Errorf("proto: DistributionParams: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Params: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: DistributionParams: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -302,40 +443,6 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CommunityPoolPercentage", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.CommunityPoolPercentage.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BurnPercentage", wireType)
 			}
 			var stringLen uint64
@@ -368,11 +475,11 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DrawDuration", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field FeePercentage", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowParams
@@ -382,28 +489,79 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthParams
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthParams
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.DrawDuration, dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.FeePercentage.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		case 5:
+		default:
+			iNdEx = preIndex
+			skippy, err := skipParams(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthParams
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DrawParams) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowParams
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DrawParams: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DrawParams: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TicketPrice", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Duration", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -430,7 +588,90 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.TicketPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.Duration, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipParams(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthParams
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *TicketParams) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowParams
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: TicketParams: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: TicketParams: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Price", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Price.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

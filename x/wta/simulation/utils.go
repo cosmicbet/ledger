@@ -31,8 +31,8 @@ func RandHexString(r *rand.Rand, length int) string {
 }
 
 func RandCoin(r *rand.Rand, amountLimit int64) sdk.Coin {
-	amt, _ := simtypes.RandPositiveInt(r, sdk.NewInt(amountLimit))
-	return sdk.NewCoin(sdk.DefaultBondDenom, amt)
+	amt := r.Int63n(amountLimit) + 1 // Minimum 1 token
+	return sdk.NewCoin(sdk.DefaultBondDenom, sdk.TokensFromConsensusPower(amt))
 }
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -89,17 +89,29 @@ func RandHistoricalDrawsData(r *rand.Rand, length int, accounts []simtypes.Accou
 
 // -------------------------------------------------------------------------------------------------------------------
 
-// RandomParams returns a randomly generated parameters
-func RandomParams(r *rand.Rand) types.Params {
-	prizePercentage := r.Int63n(97) + 1                // Minimum 1%, max 98%
-	poolPercentage := r.Int63n(98-prizePercentage) + 1 // Minimum 1%, max 98%
-	burnPercentage := 100 - (prizePercentage + poolPercentage)
+// RandomDistributionParams returns a randomly generated DistributionParams
+func RandomDistributionParams(r *rand.Rand) types.DistributionParams {
+	prizePercentage := r.Int63n(97) + 1               // Minimum 1%, max 98%
+	feePercentage := r.Int63n(98-prizePercentage) + 1 // Minimum 1%, max 98%
+	burnPercentage := 100 - (prizePercentage + feePercentage)
 
-	return types.NewParams(
-		sdk.NewInt(prizePercentage),
-		sdk.NewInt(poolPercentage),
-		sdk.NewInt(burnPercentage),
-		time.Minute*time.Duration(r.Int63n(3)+1), // Minimum 1 minute, max 3 minutes
+	return types.NewDistributionParams(
+		sdk.NewDecWithPrec(prizePercentage, 2),
+		sdk.NewDecWithPrec(feePercentage, 2),
+		sdk.NewDecWithPrec(burnPercentage, 2),
+	)
+}
+
+// RandomDrawParams returns a randomly generated DrawParams
+func RandomDrawParams(r *rand.Rand) types.DrawParams {
+	return types.NewDrawParams(
+		time.Minute * time.Duration(r.Int63n(3)+1), // Minimum 1 minute, max 3 minutes
+	)
+}
+
+// RandomTicketParams returns a randomly generated TicketParams
+func RandomTicketParams(r *rand.Rand) types.TicketParams {
+	return types.NewTicketParams(
 		RandCoin(r, 1000),
 	)
 }

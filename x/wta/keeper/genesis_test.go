@@ -10,24 +10,26 @@ import (
 
 func (suite *KeeperTestSuite) Test_ExportGenesis() {
 	usecases := []struct {
-		name            string
-		drawEndDate     time.Time
-		tickets         []types.Ticket
-		historicalDraws []types.HistoricalDrawData
-		params          types.Params
+		name               string
+		drawEndDate        time.Time
+		tickets            []types.Ticket
+		historicalDraws    []types.HistoricalDrawData
+		distributionParams types.DistributionParams
+		drawParams         types.DrawParams
+		ticketParams       types.TicketParams
 	}{
 		{
 			name:            "empty tickets and historical data",
 			drawEndDate:     time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 			tickets:         nil,
 			historicalDraws: nil,
-			params: types.NewParams(
-				sdk.NewInt(98),
-				sdk.NewInt(1),
-				sdk.NewInt(1),
-				time.Minute*5,
-				sdk.NewInt64Coin("stake", 10),
+			distributionParams: types.NewDistributionParams(
+				sdk.NewDecWithPrec(98, 2),
+				sdk.NewDecWithPrec(1, 2),
+				sdk.NewDecWithPrec(1, 2),
 			),
+			drawParams:   types.NewDrawParams(time.Minute * 5),
+			ticketParams: types.NewTicketParams(sdk.NewInt64Coin("stake", 10)),
 		},
 		{
 			name:        "non empty tickets and historical data",
@@ -59,13 +61,13 @@ func (suite *KeeperTestSuite) Test_ExportGenesis() {
 					),
 				),
 			},
-			params: types.NewParams(
-				sdk.NewInt(95),
-				sdk.NewInt(3),
-				sdk.NewInt(2),
-				time.Minute*3,
-				sdk.NewInt64Coin("stake", 10),
+			distributionParams: types.NewDistributionParams(
+				sdk.NewDecWithPrec(95, 2),
+				sdk.NewDecWithPrec(3, 2),
+				sdk.NewDecWithPrec(2, 2),
 			),
+			drawParams:   types.NewDrawParams(time.Minute * 3),
+			ticketParams: types.NewTicketParams(sdk.NewInt64Coin("stake", 10)),
 		},
 	}
 
@@ -77,13 +79,17 @@ func (suite *KeeperTestSuite) Test_ExportGenesis() {
 			for _, h := range uc.historicalDraws {
 				suite.keeper.SaveHistoricalDraw(suite.ctx, h)
 			}
-			suite.keeper.SetParams(suite.ctx, uc.params)
+			suite.keeper.SetDistributionParams(suite.ctx, uc.distributionParams)
+			suite.keeper.SetDrawParams(suite.ctx, uc.drawParams)
+			suite.keeper.SetTicketParams(suite.ctx, uc.ticketParams)
 
 			exported := suite.keeper.ExportGenesis(suite.ctx)
 			suite.Require().Equal(uc.drawEndDate, exported.DrawEndTime)
 			suite.Require().Equal(uc.tickets, exported.Tickets)
 			suite.Require().Equal(uc.historicalDraws, exported.PastDraws)
-			suite.Require().Equal(uc.params, exported.Params)
+			suite.Require().Equal(uc.distributionParams, exported.DistributionParams)
+			suite.Require().Equal(uc.drawParams, exported.DrawParams)
+			suite.Require().Equal(uc.ticketParams, exported.TicketParams)
 		})
 	}
 }
@@ -99,13 +105,13 @@ func (suite *KeeperTestSuite) Test_ImportGenesis() {
 				time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
 				nil,
 				nil,
-				types.NewParams(
-					sdk.NewInt(98),
-					sdk.NewInt(1),
-					sdk.NewInt(1),
-					time.Minute*5,
-					sdk.NewInt64Coin("stake", 10),
+				types.NewDistributionParams(
+					sdk.NewDecWithPrec(98, 2),
+					sdk.NewDecWithPrec(1, 2),
+					sdk.NewDecWithPrec(1, 2),
 				),
+				types.NewDrawParams(time.Minute*5),
+				types.NewTicketParams(sdk.NewInt64Coin("stake", 10)),
 			),
 		},
 		{
@@ -139,13 +145,13 @@ func (suite *KeeperTestSuite) Test_ImportGenesis() {
 						),
 					),
 				},
-				types.NewParams(
-					sdk.NewInt(95),
-					sdk.NewInt(3),
-					sdk.NewInt(2),
-					time.Minute*3,
-					sdk.NewInt64Coin("stake", 10),
+				types.NewDistributionParams(
+					sdk.NewDecWithPrec(95, 2),
+					sdk.NewDecWithPrec(3, 2),
+					sdk.NewDecWithPrec(2, 2),
 				),
+				types.NewDrawParams(time.Minute*3),
+				types.NewTicketParams(sdk.NewInt64Coin("stake", 10)),
 			),
 		},
 	}
@@ -158,14 +164,12 @@ func (suite *KeeperTestSuite) Test_ImportGenesis() {
 			draw := suite.keeper.GetCurrentDraw(suite.ctx)
 			suite.Require().Equal(uc.genesis.DrawEndTime, draw.EndTime)
 
-			tickets := suite.keeper.GetTickets(suite.ctx)
-			suite.Require().Equal(uc.genesis.Tickets, tickets)
+			suite.Require().Equal(uc.genesis.Tickets, suite.keeper.GetTickets(suite.ctx))
+			suite.Require().Equal(uc.genesis.PastDraws, suite.keeper.GetHistoricalDrawsData(suite.ctx))
 
-			pastDraws := suite.keeper.GetHistoricalDrawsData(suite.ctx)
-			suite.Require().Equal(uc.genesis.PastDraws, pastDraws)
-
-			params := suite.keeper.GetParams(suite.ctx)
-			suite.Require().Equal(uc.genesis.Params, params)
+			suite.Require().Equal(uc.genesis.DistributionParams, suite.keeper.GetDistributionParams(suite.ctx))
+			suite.Require().Equal(uc.genesis.DrawParams, suite.keeper.GetDrawParams(suite.ctx))
+			suite.Require().Equal(uc.genesis.TicketParams, suite.keeper.GetTicketParams(suite.ctx))
 		})
 	}
 }

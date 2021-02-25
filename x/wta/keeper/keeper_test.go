@@ -3,6 +3,8 @@ package keeper_test
 import (
 	"time"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
@@ -13,25 +15,25 @@ func (suite *KeeperTestSuite) Test_WithdrawTicketsCost() {
 	usecases := []struct {
 		name            string
 		ticketPrice     sdk.Coin
-		prizePercentage sdk.Int
-		poolPercentage  sdk.Int
-		burnPercentage  sdk.Int
+		prizePercentage sdk.Dec
+		feePercentage   sdk.Dec
+		burnPercentage  sdk.Dec
 		accountAddress  string
 		accountBalance  sdk.Coins
 		quantity        uint32
 
-		shouldErr      bool
-		expAccBalance  sdk.Coins
-		expPrizePool   sdk.Coins
-		expPoolBalance sdk.Coins
-		expSupply      sdk.Coins
+		shouldErr     bool
+		expAccBalance sdk.Coins
+		expPrizePool  sdk.Coins
+		expFeeBalance sdk.Coins
+		expSupply     sdk.Coins
 	}{
 		{
 			name:            "insufficient balance (0)",
 			ticketPrice:     sdk.NewInt64Coin("stake", 10),
-			prizePercentage: sdk.NewInt(98),
-			poolPercentage:  sdk.NewInt(1),
-			burnPercentage:  sdk.NewInt(1),
+			prizePercentage: sdk.NewDecWithPrec(98, 2),
+			feePercentage:   sdk.NewDecWithPrec(1, 2),
+			burnPercentage:  sdk.NewDecWithPrec(1, 2),
 			accountAddress:  "cosmos14zfwkjm35j05ydm3s3qu4he39yjxe9575echwl",
 			accountBalance:  sdk.NewCoins(sdk.NewInt64Coin("fiches", 100)),
 			quantity:        1,
@@ -40,9 +42,9 @@ func (suite *KeeperTestSuite) Test_WithdrawTicketsCost() {
 		{
 			name:            "insufficient balance (> 0)",
 			ticketPrice:     sdk.NewInt64Coin("stake", 10),
-			prizePercentage: sdk.NewInt(98),
-			poolPercentage:  sdk.NewInt(1),
-			burnPercentage:  sdk.NewInt(1),
+			prizePercentage: sdk.NewDecWithPrec(98, 2),
+			feePercentage:   sdk.NewDecWithPrec(1, 2),
+			burnPercentage:  sdk.NewDecWithPrec(1, 2),
 			accountAddress:  "cosmos14zfwkjm35j05ydm3s3qu4he39yjxe9575echwl",
 			accountBalance:  sdk.NewCoins(sdk.NewInt64Coin("stake", 9)),
 			quantity:        1,
@@ -51,30 +53,30 @@ func (suite *KeeperTestSuite) Test_WithdrawTicketsCost() {
 		{
 			name:            "single ticket",
 			ticketPrice:     sdk.NewInt64Coin("stake", 100),
-			prizePercentage: sdk.NewInt(98),
-			poolPercentage:  sdk.NewInt(1),
-			burnPercentage:  sdk.NewInt(1),
+			prizePercentage: sdk.NewDecWithPrec(98, 2),
+			feePercentage:   sdk.NewDecWithPrec(1, 2),
+			burnPercentage:  sdk.NewDecWithPrec(1, 2),
 			accountAddress:  "cosmos14zfwkjm35j05ydm3s3qu4he39yjxe9575echwl",
 			accountBalance:  sdk.NewCoins(sdk.NewInt64Coin("stake", 100)),
 			quantity:        1,
 			shouldErr:       false,
 			expAccBalance:   sdk.NewCoins(),
 			expPrizePool:    sdk.NewCoins(sdk.NewInt64Coin("stake", 98)),
-			expPoolBalance:  sdk.NewCoins(sdk.NewInt64Coin("stake", 1)),
+			expFeeBalance:   sdk.NewCoins(sdk.NewInt64Coin("stake", 1)),
 			expSupply:       sdk.NewCoins(sdk.NewInt64Coin("stake", 99)),
 		},
 		{
 			name:            "multiple tickets",
 			ticketPrice:     sdk.NewInt64Coin("stake", 100),
-			prizePercentage: sdk.NewInt(95),
-			poolPercentage:  sdk.NewInt(2),
-			burnPercentage:  sdk.NewInt(3),
+			prizePercentage: sdk.NewDecWithPrec(95, 2),
+			feePercentage:   sdk.NewDecWithPrec(2, 2),
+			burnPercentage:  sdk.NewDecWithPrec(3, 2),
 			accountAddress:  "cosmos14zfwkjm35j05ydm3s3qu4he39yjxe9575echwl",
 			accountBalance:  sdk.NewCoins(sdk.NewInt64Coin("stake", 1000)),
 			quantity:        5,
 			expPrizePool:    sdk.NewCoins(sdk.NewInt64Coin("stake", 475)),
 			expAccBalance:   sdk.NewCoins(sdk.NewInt64Coin("stake", 500)),
-			expPoolBalance:  sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
+			expFeeBalance:   sdk.NewCoins(sdk.NewInt64Coin("stake", 10)),
 			expSupply:       sdk.NewCoins(sdk.NewInt64Coin("stake", 985)),
 		},
 	}
@@ -83,9 +85,10 @@ func (suite *KeeperTestSuite) Test_WithdrawTicketsCost() {
 		suite.SetupTest()
 		suite.Run(uc.name, func() {
 			// Set the params
-			params := wtatypes.NewParams(uc.prizePercentage, uc.poolPercentage, uc.burnPercentage, 1*time.Minute, uc.ticketPrice)
-			suite.Require().NoError(params.Validate())
-			suite.keeper.SetParams(suite.ctx, params)
+			suite.keeper.SetDistributionParams(suite.ctx,
+				wtatypes.NewDistributionParams(uc.prizePercentage, uc.feePercentage, uc.burnPercentage))
+			suite.keeper.SetDrawParams(suite.ctx, wtatypes.NewDrawParams(1*time.Minute))
+			suite.keeper.SetTicketParams(suite.ctx, wtatypes.NewTicketParams(uc.ticketPrice))
 
 			// Get the account
 			addr, err := sdk.AccAddressFromBech32(uc.accountAddress)
@@ -111,8 +114,9 @@ func (suite *KeeperTestSuite) Test_WithdrawTicketsCost() {
 				prizePool := suite.bk.GetAllBalances(suite.ctx, prizeAcc.GetAddress())
 				suite.Require().True(prizePool.IsEqual(uc.expPrizePool))
 
-				poolBalance := suite.dk.GetFeePoolCommunityCoins(suite.ctx)
-				suite.Require().True(poolBalance.IsEqual(sdk.NewDecCoinsFromCoins(uc.expPoolBalance...)))
+				feeAcc := authtypes.NewModuleAddress(authtypes.FeeCollectorName)
+				feeBalance := suite.bk.GetAllBalances(suite.ctx, feeAcc)
+				suite.Require().True(feeBalance.IsEqual(uc.expFeeBalance))
 
 				supply := suite.bk.GetSupply(suite.ctx)
 				suite.Require().True(supply.GetTotal().IsEqual(uc.expSupply))
