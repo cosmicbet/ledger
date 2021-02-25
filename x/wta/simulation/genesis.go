@@ -35,7 +35,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	fmt.Printf("Selected randomly generated %s parameters:\n%s\n", types.ModuleName, bz)
 
 	// Update the coins supply and the prize collector balance based on the generated draw prize
-	prize := RandCoint(simState.Rand, 100000)
+	prize := RandCoin(simState.Rand, 100000)
 
 	var bankState banktypes.GenesisState
 	simState.Cdc.MustUnmarshalJSON(simState.GenState[banktypes.ModuleName], &bankState)

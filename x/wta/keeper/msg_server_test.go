@@ -28,8 +28,8 @@ func (suite *KeeperTestSuite) Test_MsgServer_BuyTickets() {
 		accBalance      sdk.Coins
 		msg             *types.MsgBuyTickets
 		shouldErr       bool
-		expParticipants uint32
-		expTicketsSold  uint32
+		expParticipants []string
+		expTicketsSold  int
 	}{
 		{
 			name:      "invalid address",
@@ -42,13 +42,15 @@ func (suite *KeeperTestSuite) Test_MsgServer_BuyTickets() {
 			shouldErr: true,
 		},
 		{
-			name:            "buying without any stored ticket",
-			stored:          nil,
-			accBalance:      sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 10000)),
-			msg:             types.NewMsgBuyTickets(10, addr.String()),
-			shouldErr:       false,
-			expParticipants: 1,
-			expTicketsSold:  10,
+			name:       "buying without any stored ticket",
+			stored:     nil,
+			accBalance: sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 10000)),
+			msg:        types.NewMsgBuyTickets(10, addr.String()),
+			shouldErr:  false,
+			expParticipants: []string{
+				addr.String(),
+			},
+			expTicketsSold: 10,
 		},
 		{
 			name:       "buying more tickets",
@@ -65,10 +67,12 @@ func (suite *KeeperTestSuite) Test_MsgServer_BuyTickets() {
 					addr.String(),
 				),
 			},
-			msg:             types.NewMsgBuyTickets(5, addr.String()),
-			shouldErr:       false,
-			expParticipants: 1,
-			expTicketsSold:  7,
+			msg:       types.NewMsgBuyTickets(5, addr.String()),
+			shouldErr: false,
+			expParticipants: []string{
+				addr.String(),
+			},
+			expTicketsSold: 7,
 		},
 		{
 			name:       "buying tickets as second participant",
@@ -85,10 +89,13 @@ func (suite *KeeperTestSuite) Test_MsgServer_BuyTickets() {
 					"user-2",
 				),
 			},
-			msg:             types.NewMsgBuyTickets(5, addr.String()),
-			shouldErr:       false,
-			expParticipants: 2,
-			expTicketsSold:  7,
+			msg:       types.NewMsgBuyTickets(5, addr.String()),
+			shouldErr: false,
+			expParticipants: []string{
+				addr.String(),
+				"user-2",
+			},
+			expTicketsSold: 7,
 		},
 	}
 
@@ -108,9 +115,9 @@ func (suite *KeeperTestSuite) Test_MsgServer_BuyTickets() {
 			} else {
 				suite.Require().NoError(err)
 
-				participants, ticketsSold := suite.keeper.GetDrawParticipantsAndTicketsSold(suite.ctx)
+				participants, ticketsSold := suite.keeper.GetDrawParticipantsAndTickets(suite.ctx)
 				suite.Require().Equal(uc.expParticipants, participants)
-				suite.Require().Equal(uc.expTicketsSold, ticketsSold)
+				suite.Require().Len(ticketsSold, uc.expTicketsSold)
 			}
 		})
 	}
