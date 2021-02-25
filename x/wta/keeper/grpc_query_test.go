@@ -224,13 +224,13 @@ func (suite *KeeperTestSuite) Test_Querier_PastDraws() {
 }
 
 func (suite *KeeperTestSuite) Test_Querier_Params() {
-	params := types.NewParams(
-		sdk.NewInt(95),
-		sdk.NewInt(3),
-		sdk.NewInt(2),
-		time.Minute*3,
-		sdk.NewInt64Coin("stake", 10),
+	distributionParams := types.NewDistributionParams(
+		sdk.NewDecWithPrec(95, 2),
+		sdk.NewDecWithPrec(3, 2),
+		sdk.NewDecWithPrec(2, 2),
 	)
+	drawParams := types.NewDrawParams(time.Minute * 3)
+	ticketParams := types.NewTicketParams(sdk.NewInt64Coin("stake", 10))
 
 	usecases := []struct {
 		name      string
@@ -252,7 +252,9 @@ func (suite *KeeperTestSuite) Test_Querier_Params() {
 	for _, uc := range usecases {
 		suite.SetupTest()
 		suite.Run(uc.name, func() {
-			suite.keeper.SetParams(suite.ctx, params)
+			suite.keeper.SetDistributionParams(suite.ctx, distributionParams)
+			suite.keeper.SetDrawParams(suite.ctx, drawParams)
+			suite.keeper.SetTicketParams(suite.ctx, ticketParams)
 
 			querier := keeper.NewQuerierImpl(suite.keeper)
 			res, err := querier.Params(sdk.WrapSDKContext(suite.ctx), uc.req)
@@ -261,7 +263,9 @@ func (suite *KeeperTestSuite) Test_Querier_Params() {
 				suite.Require().Error(err)
 			} else {
 				suite.Require().NoError(err)
-				suite.Require().Equal(params, res.Params)
+				suite.Require().Equal(distributionParams, res.DistributionParams)
+				suite.Require().Equal(drawParams, res.DrawParams)
+				suite.Require().Equal(ticketParams, res.TicketParams)
 			}
 		})
 	}

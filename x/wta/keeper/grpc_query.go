@@ -107,6 +107,9 @@ func (k Keeper) Params(ctx context.Context, req *types.QueryParamsRequest) (*typ
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	params := k.GetParams(sdkCtx)
-	return &types.QueryParamsResponse{Params: params}, nil
+	return &types.QueryParamsResponse{
+		DistributionParams: k.GetDistributionParams(sdkCtx),
+		DrawParams:         k.GetDrawParams(sdkCtx),
+		TicketParams:       k.GetTicketParams(sdkCtx),
+	}, nil
 }

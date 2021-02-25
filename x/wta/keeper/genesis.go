@@ -12,7 +12,9 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 		k.GetCurrentDraw(ctx).EndTime,
 		k.GetTickets(ctx),
 		k.GetHistoricalDrawsData(ctx),
-		k.GetParams(ctx),
+		k.GetDistributionParams(ctx),
+		k.GetDrawParams(ctx),
+		k.GetTicketParams(ctx),
 	)
 }
 
@@ -25,5 +27,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state types.GenesisState) {
 		k.SaveHistoricalDraw(ctx, data)
 	}
 
-	k.SetParams(ctx, state.Params)
+	k.SetDistributionParams(ctx, state.DistributionParams)
+	k.SetDrawParams(ctx, state.DrawParams)
+	k.SetTicketParams(ctx, state.TicketParams)
 }

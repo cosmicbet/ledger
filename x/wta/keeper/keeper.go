@@ -24,12 +24,15 @@ type Keeper struct {
 	ak authkeeper.AccountKeeper
 	bk bankkeeper.Keeper
 	dk distrkeeper.Keeper
+
+	feeCollectorName string // name of the FeeCollector ModuleAccount
 }
 
 // NewKeeper creates new instances of the wta Keeper
 func NewKeeper(
 	cdc codec.BinaryMarshaler, storeKey sdk.StoreKey, paramSpace paramstypes.Subspace,
 	ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, dk distrkeeper.Keeper,
+	feeCollectorName string,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -43,6 +46,8 @@ func NewKeeper(
 		ak: ak,
 		bk: bk,
 		dk: dk,
+
+		feeCollectorName: feeCollectorName,
 	}
 }
 
@@ -55,7 +60,7 @@ func (k Keeper) WithdrawTicketsCost(ctx sdk.Context, quantity uint32, buyer sdk.
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid amount of tickets: %d", quantity)
 	}
 
-	ticketPrice := k.GetParams(ctx).TicketPrice
+	ticketPrice := k.GetTicketParams(ctx).Price
 	ticketsTotal := sdk.NewCoin(ticketPrice.Denom, ticketPrice.Amount.MulRaw(int64(quantity)))
 
 	// Check the user balance
@@ -64,11 +69,12 @@ func (k Keeper) WithdrawTicketsCost(ctx sdk.Context, quantity uint32, buyer sdk.
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "cannot purchase %d tickets", quantity)
 	}
 
-	params := k.GetParams(ctx)
+	params := k.GetDistributionParams(ctx)
 
 	// Update the prize pool
-	prizeAmount := sdk.NewCoin(ticketsTotal.Denom, ticketsTotal.Amount.Mul(params.PrizePercentage).QuoRaw(100))
-	err := k.bk.SendCoinsFromAccountToModule(ctx, buyer, types.PrizeCollectorName, sdk.NewCoins(prizeAmount))
+	prizeAmount := ticketsTotal.Amount.ToDec().Mul(params.PrizePercentage).RoundInt()
+	prizeCoin := sdk.NewCoin(ticketsTotal.Denom, prizeAmount)
+	err := k.bk.SendCoinsFromAccountToModule(ctx, buyer, types.PrizeCollectorName, sdk.NewCoins(prizeCoin))
 	if err != nil {
 		return err
 	}
@@ -76,25 +82,26 @@ func (k Keeper) WithdrawTicketsCost(ctx sdk.Context, quantity uint32, buyer sdk.
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypePrizeIncrease,
-			sdk.NewAttribute(types.AttributeKeyPrizeAmount, prizeAmount.String()),
+			sdk.NewAttribute(types.AttributeKeyPrizeAmount, prizeCoin.String()),
 		),
 	)
 
-	// Send the pool amount to the community pool
-	poolAmount := sdk.NewCoin(ticketsTotal.Denom, ticketsTotal.Amount.Mul(params.CommunityPoolPercentage).QuoRaw(100))
-	err = k.dk.FundCommunityPool(ctx, sdk.NewCoins(poolAmount), buyer)
+	// Send the fee amount to the fee pool
+	feeAmount := ticketsTotal.Amount.ToDec().Mul(params.FeePercentage).RoundInt()
+	feeCoin := sdk.NewCoin(ticketsTotal.Denom, feeAmount)
+	err = k.bk.SendCoinsFromAccountToModule(ctx, buyer, k.feeCollectorName, sdk.NewCoins(feeCoin))
 	if err != nil {
 		return err
 	}
 
 	// Burn the tokens
-	burnAmount := sdk.NewCoin(ticketsTotal.Denom, ticketsTotal.Amount.Mul(params.BurnPercentage).QuoRaw(100))
-	err = k.bk.SendCoinsFromAccountToModule(ctx, buyer, types.PrizeBurnerName, sdk.NewCoins(burnAmount))
+	burnCoin := ticketsTotal.Sub(prizeCoin).Sub(feeCoin)
+	err = k.bk.SendCoinsFromAccountToModule(ctx, buyer, types.PrizeBurnerName, sdk.NewCoins(burnCoin))
 	if err != nil {
 		return err
 	}
 
-	return k.bk.BurnCoins(ctx, types.PrizeBurnerName, sdk.NewCoins(burnAmount))
+	return k.bk.BurnCoins(ctx, types.PrizeBurnerName, sdk.NewCoins(burnCoin))
 }
 
 // SaveTickets sets the given tickets for the given user

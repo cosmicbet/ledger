@@ -14,13 +14,13 @@ func (suite *KeeperTestSuite) Test_MsgServer_BuyTickets() {
 	addr, err := sdk.AccAddressFromBech32("cosmos14zfwkjm35j05ydm3s3qu4he39yjxe9575echwl")
 	suite.Require().NoError(err)
 
-	params := types.NewParams(
-		sdk.NewInt(98),
-		sdk.NewInt(1),
-		sdk.NewInt(1),
-		time.Minute*1,
-		sdk.NewInt64Coin(sdk.DefaultBondDenom, 10),
+	distributionParams := types.NewDistributionParams(
+		sdk.NewDecWithPrec(98, 2),
+		sdk.NewDecWithPrec(1, 2),
+		sdk.NewDecWithPrec(1, 2),
 	)
+	drawParams := types.NewDrawParams(time.Minute * 1)
+	ticketParams := types.NewTicketParams(sdk.NewInt64Coin(sdk.DefaultBondDenom, 10))
 
 	usecases := []struct {
 		name            string
@@ -103,7 +103,9 @@ func (suite *KeeperTestSuite) Test_MsgServer_BuyTickets() {
 		suite.SetupTest()
 		suite.Run(uc.name, func() {
 			suite.keeper.SaveTickets(suite.ctx, uc.stored)
-			suite.keeper.SetParams(suite.ctx, params)
+			suite.keeper.SetDistributionParams(suite.ctx, distributionParams)
+			suite.keeper.SetDrawParams(suite.ctx, drawParams)
+			suite.keeper.SetTicketParams(suite.ctx, ticketParams)
 			suite.bk.SetSupply(suite.ctx, banktypes.NewSupply(uc.accBalance))
 			suite.Require().NoError(suite.bk.SetBalances(suite.ctx, addr, uc.accBalance))
 

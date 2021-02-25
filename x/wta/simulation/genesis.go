@@ -3,8 +3,6 @@ package simulation
 // DONTCOVER
 
 import (
-	"encoding/json"
-	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,16 +21,11 @@ func RandomizedGenState(simState *module.SimulationState) {
 		RandDate(simState.Rand, time.Now().Add(time.Minute*1)),
 		RandTicketsSlice(simState.Rand, 20, simState.Accounts),
 		RandHistoricalDrawsData(simState.Rand, 50, simState.Accounts),
-		RandomParams(simState.Rand),
+		RandomDistributionParams(simState.Rand),
+		RandomDrawParams(simState.Rand),
+		RandomTicketParams(simState.Rand),
 	)
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(genesisState)
-
-	// Log the params
-	bz, err := json.MarshalIndent(&genesisState.Params, "", "")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Selected randomly generated %s parameters:\n%s\n", types.ModuleName, bz)
 
 	// Update the coins supply and the prize collector balance based on the generated draw prize
 	prize := RandCoin(simState.Rand, 100000)
