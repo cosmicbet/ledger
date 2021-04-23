@@ -1,0 +1,12 @@
+syntax = "proto3";
+package cosmicbet.ledger.luckydrop;
+
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/cosmicbet/ledger/x/luckydrop/types";
+
+// GenesisState defines the luckydrop module's genesis state.
+message GenesisState {
+    // this line is used by starport scaffolding # genesis/proto/state
+    // this line is used by starport scaffolding # ibc/genesis/proto
+}

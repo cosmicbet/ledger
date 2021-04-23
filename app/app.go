@@ -9,6 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 
+	"github.com/cosmicbet/ledger/x/luckydrop"
 	wtakeeper "github.com/cosmicbet/ledger/x/wta/keeper"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -135,6 +136,7 @@ var (
 
 		// Custom modules
 		wta.AppModuleBasic{},
+		luckydrop.AppModuleBasic{},
 	)
 
 	// module account permissions
